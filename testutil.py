@@ -6,6 +6,7 @@ import csv
 import itertools
 import yfinance as yf
 from datetime import datetime, timedelta
+from typing import Optional
 
 @dataclass
 class Allocation:
@@ -53,8 +54,12 @@ def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosi
     k = int(open_positions_ratio * n)
     return list(map(lambda x: HoldingPosition(x), assets[:k]))
 
-def read_portfolio(persent_to_unit = 10, t0 = 0, t1 = 0, open_positions_ratio = 0.6) -> Market:
+def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0 = 0, t1 = 0, open_positions_ratio = 0.6) -> Market:
     allocations = read_allocations(persent_to_unit)
+    allocations.sort(key = lambda x: x.ticker)
     assets_of_interest = get_assets(allocations, t0, t1)
+    assets_of_interest.sort(key = lambda x: x.name)
+    assets_of_interest = assets_of_interest[:limit]
     portfolio = get_positions(assets_of_interest, open_positions_ratio)
+    portfolio.sort(key = lambda x: x.asset.name)
     return Market(assets_of_interest, portfolio)
