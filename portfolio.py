@@ -60,8 +60,8 @@ def optimize(computer: Computer, portfolio: list[HoldingPosition], assets_of_int
     holding = list(map(lambda x: x.asset, filter(lambda x: x.asset in assets_of_interest, portfolio)))
     candidates = list(filter(lambda x: not x in holding, assets_of_interest))
 
-    sell_profits = list(map(lambda x: profit(predict(x), 1), holding))
-    buy_profits = list(map(lambda x: profit(predict(x), -1), candidates))
+    sell_profits = list(map(lambda x: profit(predict(x), -1), holding))
+    buy_profits = list(map(lambda x: profit(predict(x), 1), candidates))
     profits = buy_profits + sell_profits
     
     formula = reduce(add_formula_chunk, profits, Zero())

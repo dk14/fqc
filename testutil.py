@@ -33,7 +33,7 @@ def decode(cache_data:dict[str, int]) -> dict[(datetime, str), int]:
 @dataclass
 class Allocation:
     ticker: str
-    allocation: int # assume a unit = (1/persent_to_unit)%
+    allocation: int # assume a unit = (1/point_to_unit)%
     allocation_usd: int
 
 @dataclass
@@ -75,18 +75,18 @@ def get_price(date: datetime, ticker: str, default = None) -> int:
         price_cache[(date, ticker)] = int(prices[0])
         return int(prices[0])
 
-def read_allocations(persent_to_unit, t0) -> list[Allocation]:
+def read_allocations(point_to_unit, t0) -> list[Allocation]:
     with open('example_portfolio.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         def units(ticker, allocation, allocation_usd):
             if t0 == None:
-                return allocation * persent_to_unit
+                return allocation * point_to_unit
             else:
                 price = get_price(t0, ticker, None)
                 if price != None:
-                    return int(allocation_usd / price) + 1
+                    return int(allocation_usd / (price * point_to_unit)) + 1
                 else:
-                    return allocation * persent_to_unit
+                    return allocation * point_to_unit
             
         allocations = [Allocation(row['ticker'], units(row['ticker'], int(float(row['allocation'])), int(float(row['allocation_usd']))), int(float(row['allocation_usd']))) for row in reader]
         return sum_allocations_by_ticker(allocations)
@@ -139,12 +139,16 @@ def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosi
     k = int(open_positions_ratio * n)
     return list(map(lambda x: HoldingPosition(x), assets[:k]))
 
-def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0: datetime = None, t1: datetime = None, open_positions_ratio = 0.6, risk: RiskModel = RiskModel()) -> Market:
+
+# point_to_unit either converts allocation persent point to unit or a share to unit
+def read_portfolio(limit: Optional[int] = None, point_to_unit = 10, t0: datetime = None, t1: datetime = None, open_positions_ratio = 0.6, risk: RiskModel = RiskModel()) -> Market:
     global price_cache
     price_cache = decode(load('price_cache'))
-    allocations = read_allocations(persent_to_unit, t0)
+    allocations = read_allocations(point_to_unit, t0)
     allocations.sort(key = lambda x: x.ticker)
     assets_of_interest = get_assets(allocations, t0, t1, risk)
+    if len(assets_of_interest) > 300000:
+        print("fragmentation: " + str(len(assets_of_interest)))
     assets_of_interest.sort(key = lambda x: x.name)
     assets_of_interest = assets_of_interest[:limit]
     portfolio = get_positions(assets_of_interest, open_positions_ratio)

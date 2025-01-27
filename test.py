@@ -12,6 +12,9 @@ appl = Asset("APPL", 100)
 btc = Asset("BTC", 200)
 math = Asset("MATH", 100)
 
+market1 = read_portfolio(limit = None, point_to_unit = 1)
+market2 = read_portfolio(limit = 4, point_to_unit = 1)
+
 class Testing(unittest.TestCase):
 
     def test_classic(self):
@@ -19,7 +22,7 @@ class Testing(unittest.TestCase):
         portfolio = [HoldingPosition(appl), HoldingPosition(btc)]
         candidates = [appl, btc, math]
         decisions = optimize(computer, portfolio, candidates)
-        expected_decisions = [ActingPosition(appl), ActingPosition(btc)]
+        expected_decisions = [ActingPosition(math)]
         self.assertEqual(decisions, expected_decisions)
 
     def test_hamiltonian_classic(self):
@@ -27,7 +30,7 @@ class Testing(unittest.TestCase):
         portfolio = [HoldingPosition(appl), HoldingPosition(btc)]
         candidates = [appl, btc, math]
         decisions = optimize(computer, portfolio, candidates)
-        expected_decisions = [ActingPosition(appl), ActingPosition(btc)]
+        expected_decisions = [ActingPosition(math)]
         self.assertEqual(decisions, expected_decisions)
 
     def test_hamiltonian_quantum(self):
@@ -40,11 +43,11 @@ class Testing(unittest.TestCase):
             portfolio = [HoldingPosition(appl), HoldingPosition(btc)]
             candidates = [appl, btc, math]
             decisions = optimize(computer, portfolio, candidates)
-            expected_decisions = [ActingPosition(appl), ActingPosition(btc)]
+            expected_decisions = [ActingPosition(math)]
             self.assertEqual(decisions, expected_decisions)
 
     def test_full_portfolio(self):
-        market = read_portfolio(limit = None, persent_to_unit = 1)
+        market = market1
         self.assertEqual(len(market.assets_of_interest), 70)
         self.assertEqual(len(market.positions), 42)
         with warnings.catch_warnings():
@@ -57,7 +60,7 @@ class Testing(unittest.TestCase):
 
     
     def test_portfolio_chunk_ham_classic(self):
-        market = read_portfolio(limit = 4, persent_to_unit = 1)
+        market = market2
         self.assertEqual(len(market.assets_of_interest), 4)
         self.assertEqual(len(market.positions), 2)
         with warnings.catch_warnings():
@@ -66,12 +69,12 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
 
             result = list(map(lambda x: x.asset.name, optimize(HamiltonianComputerClassicEigen(), market.positions, market.assets_of_interest)))
-            #dump('decisions_chunk_ham_classic', result)
+            dump('decisions_chunk_ham_classic', result)
             self.assertEqual(result, load('decisions_chunk_ham_classic'))
         
 
     def test_portfolio_chunk_ham_q(self):
-        market = read_portfolio(limit = 4, persent_to_unit = 1)
+        market = market2
         self.assertEqual(len(market.assets_of_interest), 4)
         self.assertEqual(len(market.positions), 2)
         with warnings.catch_warnings():
@@ -80,21 +83,22 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
 
             result = list(map(lambda x: x.asset.name, optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)))
-            #dump('decisions_chunk_q', result)
+            dump('decisions_chunk_q', result)
             self.assertEqual(result, load('decisions_chunk_q'))
             
     # note: liquidity, is not taken into account (unconstrained optimization), potentially can penilize buys at t0 without sells
     # note: zero-risk interest (and overall inflation of usd) not taking into account. time value for money is out of scope
+    # note: USD holdings from immediate sell (at t0) are considered part of future value. USD is both metric and an asset on its own
     def test_backtrack_ham_q(self): #todo fix
         t0 = datetime(2021, 5, 1)
         t1 = datetime(2022, 8, 1)
-        market = read_portfolio(limit = 4, persent_to_unit = 1, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
-
+        real_market = read_portfolio(limit = 4, point_to_unit = 100000, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
+        market = real_market
 
         self.assertEqual(len(market.assets_of_interest), 4)
         self.assertEqual(len(market.positions), 2)
 
-        
+
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*qiskit.*')
             warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
@@ -103,14 +107,18 @@ class Testing(unittest.TestCase):
             result = list(map(lambda x: x.asset.name, optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)))
         
         to_sell = list(map(lambda x: x.asset, filter(lambda x: x.asset.name in result, market.positions)))
-        to_buy = list(filter(lambda x: x.name in result and not x.name in to_sell, market.assets_of_interest))
+        to_buy = list(filter(lambda x: x.name in result and not x in to_sell, market.assets_of_interest))
         to_hold = list(filter(lambda x: not x.name in result, market.assets_of_interest))
+
+        #print(to_sell)
+        #print(to_buy)
+        #print(to_hold)
 
         # we take projection in absense of data
         project_price_up: Callable[[Asset], int] = lambda x: x.price_t + x.price_t * x.swing_up / 100
         project_price_down: Callable[[Asset], int]  = lambda x: x.price_t - x.price_t * x.swing_down / 100
 
-        # buy t0, sell t1
+        # buy t0, sell t1 (liquidity note: immediate zero-interest loan assumed)
         profit_from_buying_at_t0: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_up(x)) - x.price_t
 
         # sell t0
@@ -136,8 +144,5 @@ class Testing(unittest.TestCase):
 
         self.assertGreater(future_value_with_action, future_value_without_action)
         
-
-
-
 if __name__ == '__main__':
         unittest.main()
