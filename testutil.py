@@ -19,6 +19,12 @@ class Market:
     assets_of_interest: list[Asset]
     positions: list[HoldingPosition]
 
+@dataclass
+class RiskModel:
+    leverage: float = 1.0
+    spread: float = 0.0
+
+
 def sum_allocations_by_ticker(allocations: list[Allocation]) -> list[Allocation]:
     tickers = set(map(lambda x: x.ticker, allocations))
     grouped = [[y for y in allocations if y.ticker == x] for x in tickers]
@@ -36,17 +42,32 @@ def get_price(date, ticker: str):
     return ticker.history(start=date, end=final_time, interval='1m')['Close'].iloc[-1]
 
 # todo: approximate price swings from (get_price(t1) - get_price(t0)) / get_price(t0)
-def approximate_price_up(ticker: str, t0, t1) -> int:
-    return 100
+def approximate_price_up(ticker: str, t0, t1, risk: RiskModel) -> int:
+    if t0 == 0:
+        return 100
+    else: 
+       diff = (get_price(t1) - get_price(t0)) / get_price(t0)
+       if diff > 0:
+           return risk.leverage * diff + risk.spread
+       else:
+           return risk.spread
+           
 
-def approximate_price_down(ticker: str, t0, t1) -> int:
-    return 10
+def approximate_price_down(ticker: str, t0, t1, risk: RiskModel) -> int:
+    if t0 == 0:
+        return 10
+    else: 
+       diff = (get_price(t1) - get_price(t0)) / get_price(t0)
+       if diff < 0:
+           return risk.leverage * (- diff) + risk.spread
+       else:
+           return risk.spread
 
-def get_assets(allocations: list[Allocation], t0, t1) -> list[Asset]:
+def get_assets(allocations: list[Allocation], t0, t1, risk: RiskModel) -> list[Asset]:
     fragmented = map(lambda a: map(lambda i: \
         Asset(a.ticker + "#" + str(i), a.allocation_usd / a.allocation,\
-         approximate_price_up(a.ticker, t0, t1),\
-         approximate_price_down(a.ticker, t0, t1)), range(0, a.allocation)), allocations)
+         approximate_price_up(a.ticker, t0, t1, risk),\
+         approximate_price_down(a.ticker, t0, t1, risk)), range(0, a.allocation)), allocations)
     return list(itertools.chain.from_iterable(fragmented))
 
 def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosition]:
@@ -54,10 +75,10 @@ def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosi
     k = int(open_positions_ratio * n)
     return list(map(lambda x: HoldingPosition(x), assets[:k]))
 
-def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0 = 0, t1 = 0, open_positions_ratio = 0.6) -> Market:
+def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0 = 0, t1 = 0, open_positions_ratio = 0.6, risk: RiskModel = RiskModel()) -> Market:
     allocations = read_allocations(persent_to_unit)
     allocations.sort(key = lambda x: x.ticker)
-    assets_of_interest = get_assets(allocations, t0, t1)
+    assets_of_interest = get_assets(allocations, t0, t1, risk)
     assets_of_interest.sort(key = lambda x: x.name)
     assets_of_interest = assets_of_interest[:limit]
     portfolio = get_positions(assets_of_interest, open_positions_ratio)
