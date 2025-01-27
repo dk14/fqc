@@ -83,9 +83,9 @@ class Testing(unittest.TestCase):
             #dump('decisions_chunk_q', result)
             self.assertEqual(result, load('decisions_chunk_q'))
             
-    def ignore_backtest_ham_q(self): #todo fix yfinance access
+    def ignore_backtest_ham_q(self): #todo fix
         t0 = datetime(2021, 5, 1)
-        t1 = datetime(2021, 8, 1)
+        t1 = datetime(2022, 8, 1)
         market = read_portfolio(limit = 4, persent_to_unit = 1, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
         self.assertEqual(len(market.assets_of_interest), 4)
         self.assertEqual(len(market.positions), 2)
@@ -102,10 +102,10 @@ class Testing(unittest.TestCase):
         project_price_up: Callable[[Asset], int] = lambda x: x.price_t + x.price_t * x.swing_up / 100
         project_price_down: Callable[[Asset], int]  = lambda x: x.price_t - x.price_t * x.swing_down / 100
 
+        projected_profits = map(lambda x: project_price_up(x) if x in to_buy else project_price_down(x), market.assets_of_interest)
+
         profit_from_buying: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_up(x)) - x.price_t
         profit_from_selling: Callable[[Asset], int]  = lambda x: x.price_t - get_price(t1, x.ticker, project_price_down(x))
-
-        projected_profits = map(lambda x: project_price_up(x) if x in to_buy else project_price_down(x), market.assets_of_interest)
 
         real_profits = map(lambda x:  profit_from_buying(x) if x in to_buy else profit_from_selling(x), market.assets_of_interest)
         

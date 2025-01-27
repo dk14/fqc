@@ -55,9 +55,13 @@ def sum_allocations_by_ticker(allocations: list[Allocation]) -> list[Allocation]
 
 price_cache: dict[(datetime, str), int] = {}
 
-def get_price(date, ticker: str, default = None) -> int:
+def get_price(date: datetime, ticker: str, default = None) -> int:
     if (date, ticker) in price_cache:
-        return price_cache[(date, ticker)]
+        result = price_cache[(date, ticker)]
+        if result is None:
+            return default
+        else:
+            return price_cache[(date, ticker)]
     
     yticker = yf.Ticker(ticker)
     final_time = date + timedelta(days=40)
@@ -90,7 +94,7 @@ def read_allocations(persent_to_unit, t0) -> list[Allocation]:
 
 
 # todo: approximate price swings from (get_price(t1) - get_price(t0)) / get_price(t0)
-def approximate_price_up(ticker: str, t0, t1, risk: RiskModel) -> int:
+def approximate_price_up(ticker: str, t0: datetime, t1: datetime, risk: RiskModel) -> int:
     if t0 == None:
         return 100
     else: 
@@ -101,7 +105,7 @@ def approximate_price_up(ticker: str, t0, t1, risk: RiskModel) -> int:
            return risk.spread
            
 
-def approximate_price_down(ticker: str, t0, t1, risk: RiskModel) -> int:
+def approximate_price_down(ticker: str, t0: datetime, t1:datetime, risk: RiskModel) -> int:
     if t0 == None:
         return 10
     else: 
@@ -111,7 +115,7 @@ def approximate_price_down(ticker: str, t0, t1, risk: RiskModel) -> int:
        else:
            return risk.spread
 
-def get_asset_price(a: Allocation, t0) -> int:
+def get_asset_price(a: Allocation, t0: datetime) -> int:
     if t0 == None:
         if a.allocation == 0:
             return 1
@@ -120,7 +124,7 @@ def get_asset_price(a: Allocation, t0) -> int:
     else:
         return get_price(t0, a.ticker)
 
-def get_assets(allocations: list[Allocation], t0, t1, risk: RiskModel) -> list[Asset]:
+def get_assets(allocations: list[Allocation], t0: datetime, t1: datetime, risk: RiskModel) -> list[Asset]:
     def split(a: Allocation):
         price = get_asset_price(a, t0)
         price_up = approximate_price_up(a.ticker, t0, t1, risk)
@@ -135,7 +139,7 @@ def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosi
     k = int(open_positions_ratio * n)
     return list(map(lambda x: HoldingPosition(x), assets[:k]))
 
-def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0 = None, t1 = None, open_positions_ratio = 0.6, risk: RiskModel = RiskModel()) -> Market:
+def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0: datetime = None, t1: datetime = None, open_positions_ratio = 0.6, risk: RiskModel = RiskModel()) -> Market:
     global price_cache
     price_cache = decode(load('price_cache'))
     allocations = read_allocations(persent_to_unit, t0)
