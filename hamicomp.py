@@ -60,7 +60,7 @@ class HamiltonianComputerQuantum(HamiltonianComputer):
         algorithm_globals.random_seed = 1234
         cobyla = COBYLA()
         cobyla.set_options(maxiter=500)
-        ry = TwoLocal(Computer.extract_vars(formula).length, "ry", "cz", reps=3, entanglement="full")
+        ry = TwoLocal(len(Computer.extract_vars(formula)), "ry", "cz", reps=3, entanglement="full")
         svqe_mes = SamplingVQE(sampler=Sampler(), ansatz=ry, optimizer=cobyla)
         svqe = MinimumEigenOptimizer(svqe_mes)
         result = svqe.solve(qp) 

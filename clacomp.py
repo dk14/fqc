@@ -16,9 +16,8 @@ class ClassicComputer(Computer):
 
     def maximize(self, formula: Sum) -> VarState:
         vars = Computer.extract_vars(formula)
-        values = itertools.combinations([0, 1], vars.length)
-            .map(lambda v: {vars[i]: v[i] for i in range(len(vars))})
-            .map(lambda state: (state, ClassicComputer.calculate(formula, state)))
-
+        combos = list(itertools.product([0, 1], repeat = len(vars)))
+        dict = list(map(lambda v: {vars[i]: v[i] for i in range(len(vars))}, combos))
+        values = list(map(lambda state: (state, ClassicComputer.calculate(formula, state)), dict))
         return max(values, key=lambda x: x[1])[0]
         

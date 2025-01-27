@@ -1,10 +1,13 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
+
 
 # DSL
 
 @dataclass
-class Zero
+class Zero:
+    pass
 
 @dataclass
 class Sum:
@@ -12,16 +15,16 @@ class Sum:
     b: Mul
 
 
-type Const = int
-type VarName = string # reference to a binary variable
+Const = int
+VarName = str # reference to a binary variable
 
 @dataclass
 class Mul:
     a: Const
     b: VarName
 
-type VarState = Dict[string, int]
-type VarNames  = list[string]
+VarState = dict[str, int]
+VarNames  = list[str]
 
 class Computer(ABC):
 

@@ -9,7 +9,8 @@ from comp import *
 class Asset:
     name: str
     price_t: int
-    swing: int = 10
+    swing_up: int = 10
+    swing_down: int = 5
     unit_no: int = 0
 
 @dataclass
@@ -31,8 +32,8 @@ class ProfitEstimator:
 class ActingPosition:
     asset: Asset
 
-def predict(asset: Asset, swing: int) -> Prediction: 
-    return Prediction(asset, asset.price_t + asset.price_t * asset.swing / 100, asset.price_t - asset.price_t * asset.swing / 100)
+def predict(asset: Asset) -> Prediction: 
+    return Prediction(asset, asset.price_t + (asset.price_t * asset.swing_up / 100), asset.price_t - (asset.price_t * asset.swing_down / 100))
 
 def profit(prediction: Prediction, buy_sell: int) -> ProfitEstimator:
     return ProfitEstimator(prediction.asset, 
@@ -40,19 +41,19 @@ def profit(prediction: Prediction, buy_sell: int) -> ProfitEstimator:
         (prediction.down_price_t_plus_one - prediction.asset.price_t)))
 
 def add_formula_chunk(acc: Sum, profit: ProfitEstimator) -> Sum:
-    return Sum(acc, Mul(profit1.profit_sum, profit1.asset.name))
+    return Sum(acc, Mul(profit.profit_sum, profit.asset.name))
 
 def optimize(computer: Computer, portfolio: list[HoldingPosition], assets_of_interest: list[Asset]) -> list[ActingPosition]:
-    holding = portfolio.filter(lambda x: x.asset in assets_of_interest)
-    candidates = portfolio.filter(lambda x: not x.asset in assets_of_interest)
+    holding = list(map(lambda x: x.asset, filter(lambda x: x.asset in assets_of_interest, portfolio)))
+    candidates = list(filter(lambda x: not x in holding, assets_of_interest))
 
-    sell_profits = holding.map(lambda x: profit(predict(x.asset), 1))
-    buy_profits = candidates.map(lambda x: profit(predict(x.asset), -1))
+    sell_profits = list(map(lambda x: profit(predict(x), 1), holding))
+    buy_profits = list(map(lambda x: profit(predict(x), -1), candidates))
     profits = buy_profits + sell_profits
-
-    formula = reduce(add_formula_chunk, profits, Zero())
-    result = computer.maximize(formula).items().filter(lambda x: x[1] == 1).map(x[0]) # todo dict as tuples, tuple access
     
-    return profits.filter(lambda x: x.asset.name in result).map(x => ActingPosition(x.asset))
+    formula = reduce(add_formula_chunk, profits, Zero())
+    result = list(map(lambda x: x[0], filter(lambda x: x[1] == 1, computer.maximize(formula).items())))
+    
+    return list(map(lambda x: ActingPosition(x), filter(lambda x: x.name in result, assets_of_interest)))
 
     

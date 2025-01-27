@@ -38,7 +38,7 @@ class GroverComputer(Computer):
                     acc = x + acc
 
     def build_curcuit(formula: Sum) -> QuantumCircuit:
-        qnum = Computer.extract_vars(formula).length
+        qnum = len(Computer.extract_vars(formula))
 
         oracle = QuantumCircuit(qnum)
 
