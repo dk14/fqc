@@ -2,6 +2,7 @@ import unittest
 
 from clacomp import *
 from portfolio import *
+from hamicomp import *
 
 appl = Asset("APPL", 100)
 btc = Asset("BTC", 200)

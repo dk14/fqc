@@ -6,7 +6,7 @@ from qiskit_optimization import QuadraticProgram
 
 #formulate problem compatible with quadrantic program
 
-type LinearFormula = Dict[string, int]
+LinearFormula = dict[string, int]
 
 class HamiltonianComputer(Computer):
     def to_linear_formula(formula: Sum, acc: LinearFormula = {}) -> LinearFormula: 
@@ -36,8 +36,6 @@ from qiskit.result import QuasiDistribution
 from qiskit_aer.primitives import Sampler
 from qiskit_algorithms import NumPyMinimumEigensolver, QAOA, SamplingVQE
 from qiskit_algorithms.optimizers import COBYLA
-from qiskit_finance.applications.optimization import PortfolioOptimization
-from qiskit_finance.data_providers import RandomDataProvider
 from qiskit_optimization.algorithms import MinimumEigenOptimizer
 from qiskit_algorithms.utils import algorithm_globals
 
