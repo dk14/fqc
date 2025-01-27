@@ -1,8 +1,10 @@
 import unittest
+import warnings
 
 from clacomp import *
 from portfolio import *
 from hamicomp import *
+from testutil import *
 
 appl = Asset("APPL", 100)
 btc = Asset("BTC", 200)
@@ -27,12 +29,30 @@ class Testing(unittest.TestCase):
         self.assertEqual(decisions, expected_decisions)
 
     def test_hamiltonian_quantum(self):
-        computer = HamiltonianComputerQuantum()
-        portfolio = [HoldingPosition(appl), HoldingPosition(btc)]
-        candidates = [appl, btc, math]
-        decisions = optimize(computer, portfolio, candidates)
-        expected_decisions = [ActingPosition(appl), ActingPosition(btc)]
-        self.assertEqual(decisions, expected_decisions)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*qiskit.*')
+            warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
+            warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
+
+            computer = HamiltonianComputerQuantum()
+            portfolio = [HoldingPosition(appl), HoldingPosition(btc)]
+            candidates = [appl, btc, math]
+            decisions = optimize(computer, portfolio, candidates)
+            expected_decisions = [ActingPosition(appl), ActingPosition(btc)]
+            self.assertEqual(decisions, expected_decisions)
+
+    def test_portfolio_parser(self):
+        market = read_portfolio()
+        self.assertEqual(len(market.assets_of_interest), 973)
+        self.assertEqual(len(market.positions), 583)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*qiskit.*')
+            warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
+            warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
+
+            computer = HamiltonianComputerQuantum()
+            portfolio = market.positions
+            # optimize(computer, market.positions, market.assets_of_interest)
 
 if __name__ == '__main__':
-    unittest.main()
+        unittest.main()

@@ -31,7 +31,7 @@ class HamiltonianComputer(Computer):
 # run optimization on qiskit's solver (classic and quantum)
 # https://qiskit-community.github.io/qiskit-finance/tutorials/01_portfolio_optimization.html
 
-from qiskit.circuit.library import TwoLocal
+from qiskit.circuit.library import n_local
 from qiskit.result import QuasiDistribution
 from qiskit_aer.primitives import Sampler
 from qiskit_algorithms import NumPyMinimumEigensolver, QAOA, SamplingVQE
@@ -58,7 +58,7 @@ class HamiltonianComputerQuantum(HamiltonianComputer):
         algorithm_globals.random_seed = 1234
         cobyla = COBYLA()
         cobyla.set_options(maxiter=500)
-        ry = TwoLocal(len(Computer.extract_vars(formula)), "ry", "cz", reps=3, entanglement="full")
+        ry = n_local(len(Computer.extract_vars(formula)), "ry", "cz", reps=3, entanglement="full")
         svqe_mes = SamplingVQE(sampler=Sampler(), ansatz=ry, optimizer=cobyla)
         svqe = MinimumEigenOptimizer(svqe_mes)
         result = svqe.solve(qp) 

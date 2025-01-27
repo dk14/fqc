@@ -11,7 +11,6 @@ class Asset:
     price_t: int
     swing_up: int = 10 # walk up
     swing_down: int = 5 # walk down
-    unit_no: int = 0
 
 # open position at t
 @dataclass

@@ -1,4 +1,4 @@
-Company Name,Ticker,Sector,Allocation (%),Allocation ($)
+company,ticker,sector,allocation,allocation_usd
 Apple Inc.,AAPL,Technology,0.8552637265338426,8552637.265338426
 Microsoft Corporation,MSFT,Technology,0.3252047647001334,3252047.6470013335
 Alphabet Inc.,GOOGL,Technology,4.335401568666994,43354015.686669946
