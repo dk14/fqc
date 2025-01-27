@@ -46,7 +46,7 @@ def approximate_price_up(ticker: str, t0, t1, risk: RiskModel) -> int:
     if t0 == 0:
         return 100
     else: 
-       diff = (get_price(t1) - get_price(t0)) / get_price(t0)
+       diff = (get_price(t1, ticker) - get_price(t0, ticker)) / get_price(t0, ticker)
        if diff > 0:
            return risk.leverage * diff + risk.spread
        else:
@@ -57,15 +57,21 @@ def approximate_price_down(ticker: str, t0, t1, risk: RiskModel) -> int:
     if t0 == 0:
         return 10
     else: 
-       diff = (get_price(t1) - get_price(t0)) / get_price(t0)
+       diff = (get_price(t1, ticker) - get_price(t0, ticker)) / get_price(t0, ticker)
        if diff < 0:
            return risk.leverage * (- diff) + risk.spread
        else:
            return risk.spread
 
+def get_asset_price(a: Allocation, t0) -> int:
+    if t0 == 0:
+        return a.allocation_usd / a.allocation
+    else:
+        return get_price(t0, a.ticker)
+
 def get_assets(allocations: list[Allocation], t0, t1, risk: RiskModel) -> list[Asset]:
     fragmented = map(lambda a: map(lambda i: \
-        Asset(a.ticker + "#" + str(i), a.allocation_usd / a.allocation,\
+        Asset(a.ticker + "#" + str(i), get_asset_price(a, t0),\
          approximate_price_up(a.ticker, t0, t1, risk),\
          approximate_price_down(a.ticker, t0, t1, risk)), range(0, a.allocation)), allocations)
     return list(itertools.chain.from_iterable(fragmented))
