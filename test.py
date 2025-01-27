@@ -52,7 +52,7 @@ class Testing(unittest.TestCase):
             self.assertEqual(decisions, expected_decisions)
 
     def test_full_portfolio(self):
-        market = read_portfolio(None, 1)
+        market = read_portfolio(limit = None, persent_to_unit = 1)
         self.assertEqual(len(market.assets_of_interest), 70)
         self.assertEqual(len(market.positions), 42)
         with warnings.catch_warnings():
@@ -65,7 +65,7 @@ class Testing(unittest.TestCase):
 
     
     def test_portfolio_chunk_ham_classic(self):
-        market = read_portfolio(4, 1)
+        market = read_portfolio(limit = 4, persent_to_unit = 1)
         self.assertEqual(len(market.assets_of_interest), 4)
         self.assertEqual(len(market.positions), 2)
         with warnings.catch_warnings():
@@ -79,7 +79,7 @@ class Testing(unittest.TestCase):
         
 
     def test_portfolio_chunk_ham_q(self):
-        market = read_portfolio(4, 1)
+        market = read_portfolio(limit = 4, persent_to_unit = 1)
         self.assertEqual(len(market.assets_of_interest), 4)
         self.assertEqual(len(market.positions), 2)
         with warnings.catch_warnings():
@@ -91,6 +91,32 @@ class Testing(unittest.TestCase):
             #dump('decisions_chunk_q', result)
             self.assertEqual(result, load('decisions_chunk_q'))
             
+    def backtest_ham_q(self):
+        return
+        t0 = 100
+        t1 = 1000
+        market = read_portfolio(limit = 4, persent_to_unit = 1, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
+        self.assertEqual(len(market.assets_of_interest), 4)
+        self.assertEqual(len(market.positions), 2)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*qiskit.*')
+            warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
+            warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
+
+            result = list(map(lambda x: x.asset.name, optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)))
+        
+        to_sell = list(map(lambda x: x.asset, filter(lambda x: x.asset.name in result, market.positions)))
+        to_buy = list(filter(lambda x: x.name in result and not x.name in to_sell, market.assets_of_interest))
+
+        projected_profits = map(lambda x: x.price_t + x.swing_up if x in to_buy else x.price_t - x.swing_down, market.assets_of_interest)
+        real_profits = map(lambda x: get_price(x.ticker, t1) - x.price_t if x in to_buy else x.price_t - get_price(x.ticker, t1), market.assets_of_interest)
+        
+        projected_revenue = sum(projected_profits)
+        real_revenue = sum(real_profits)
+
+        self.assertGreater(real_revenue, projected_revenue)
+
+
 
 if __name__ == '__main__':
         unittest.main()

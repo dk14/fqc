@@ -2,15 +2,17 @@
 
 from dataclasses import dataclass
 from functools import reduce
+from typing import Optional
 
 from comp import *
 
 @dataclass
 class Asset:
-    name: str # ticker
+    name: str # ticker and (optionally) number
     price_t: int
     swing_up: int = 10 # walk up
     swing_down: int = 5 # walk down
+    ticker: Optional[str] = None
 
 # open position at t
 @dataclass
