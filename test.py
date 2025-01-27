@@ -6,6 +6,7 @@ from portfolio import *
 from hamicomp import *
 from testutil import *
 import json
+from datetime import datetime
 
 appl = Asset("APPL", 100)
 btc = Asset("BTC", 200)
@@ -91,10 +92,9 @@ class Testing(unittest.TestCase):
             #dump('decisions_chunk_q', result)
             self.assertEqual(result, load('decisions_chunk_q'))
             
-    def backtest_ham_q(self): #todo fix and test
-        return
-        t0 = 100
-        t1 = 1000
+    def ignore_backtest_ham_q(self): #todo fix yfinance access
+        t0 = datetime(2021, 5, 1)
+        t1 = datetime(2021, 8, 1)
         market = read_portfolio(limit = 4, persent_to_unit = 1, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
         self.assertEqual(len(market.assets_of_interest), 4)
         self.assertEqual(len(market.positions), 2)
@@ -108,11 +108,16 @@ class Testing(unittest.TestCase):
         to_sell = list(map(lambda x: x.asset, filter(lambda x: x.asset.name in result, market.positions)))
         to_buy = list(filter(lambda x: x.name in result and not x.name in to_sell, market.assets_of_interest))
 
-        projected_profits = map(lambda x: x.price_t + x.swing_up if x in to_buy else x.price_t - x.swing_down, market.assets_of_interest)
-        real_profits = map(lambda x: get_price(x.ticker, t1) - x.price_t if x in to_buy else x.price_t - get_price(x.ticker, t1), market.assets_of_interest)
+        projected_profits = map(lambda x: x.price_t + x.price_t * x.swing_up / 100 if x in to_buy else x.price_t - x.price_t * x.swing_down / 100, market.assets_of_interest)
+        real_profits = map(lambda x: get_price(t1, x.ticker, x.price_t + x.swing_up * x.price_t / 100) - x.price_t \
+                           if x in to_buy \
+                            else x.price_t - get_price(t1, x.ticker, x.price_t - x.swing_down * x.price_t / 100), market.assets_of_interest)
         
         projected_revenue = sum(projected_profits)
         real_revenue = sum(real_profits)
+
+        print(projected_revenue)
+        print(real_revenue)
 
         self.assertGreater(real_revenue, projected_revenue)
 

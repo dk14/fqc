@@ -5,7 +5,7 @@ from functools import reduce
 import csv
 import itertools
 import yfinance as yf
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Optional
 
 @dataclass
@@ -31,10 +31,16 @@ def sum_allocations_by_ticker(allocations: list[Allocation]) -> list[Allocation]
     return list(map(lambda g: Allocation(g[0].ticker, reduce(add, map(lambda x: x.allocation, g)), reduce(add, map(lambda x: x.allocation_usd, g))), grouped))
 
 
-def get_price(date, ticker: str):
-    ticker = yf.Ticker(ticker)
-    final_time = date + timedelta(days=1)
-    return ticker.history(start=date, end=final_time, interval='1m')['Close'].iloc[-1]
+def get_price(date, ticker: str, default = None):
+    yticker = yf.Ticker(ticker)
+    final_time = date + timedelta(days=40)
+    prices = yticker.history(start=date, end=final_time, interval='1d')['Close'].iloc
+    print(ticker)
+    if len(list(prices)) == 0:
+        return default
+    else:
+        print(prices[0])
+        return int(prices[0])
 
 def read_allocations(persent_to_unit, t0) -> list[Allocation]:
     with open('example_portfolio.csv', newline='') as csvfile:
@@ -43,7 +49,11 @@ def read_allocations(persent_to_unit, t0) -> list[Allocation]:
             if t0 == None:
                 return allocation * persent_to_unit
             else:
-                return allocation_usd / get_price(t0, ticker)
+                price = get_price(t0, ticker, None)
+                if price != None:
+                    return int(allocation_usd / price) + 1
+                else:
+                    return allocation * persent_to_unit
             
         allocations = [Allocation(row['ticker'], units(row['ticker'], int(float(row['allocation'])), int(float(row['allocation_usd']))), int(float(row['allocation_usd']))) for row in reader]
         return sum_allocations_by_ticker(allocations)
@@ -55,7 +65,7 @@ def approximate_price_up(ticker: str, t0, t1, risk: RiskModel) -> int:
     if t0 == None:
         return 100
     else: 
-       diff = (get_price(t1, ticker) - get_price(t0, ticker)) / get_price(t0, ticker)
+       diff = 100 * (get_price(t1, ticker, 200) - get_price(t0, ticker, 100)) / get_price(t0, ticker, 100)
        if diff > 0:
            return risk.leverage * diff + risk.spread
        else:
@@ -66,7 +76,7 @@ def approximate_price_down(ticker: str, t0, t1, risk: RiskModel) -> int:
     if t0 == None:
         return 10
     else: 
-       diff = (get_price(t1, ticker) - get_price(t0, ticker)) / get_price(t0, ticker)
+       diff = 100 * (get_price(t1, ticker, 100) - get_price(t0, ticker, 110)) / get_price(t0, ticker, 100)
        if diff < 0:
            return risk.leverage * (- diff) + risk.spread
        else:
@@ -74,15 +84,21 @@ def approximate_price_down(ticker: str, t0, t1, risk: RiskModel) -> int:
 
 def get_asset_price(a: Allocation, t0) -> int:
     if t0 == None:
-        return a.allocation_usd / a.allocation
+        if a.allocation == 0:
+            return 1
+        else:
+            return a.allocation_usd / a.allocation
     else:
         return get_price(t0, a.ticker)
 
 def get_assets(allocations: list[Allocation], t0, t1, risk: RiskModel) -> list[Asset]:
-    fragmented = map(lambda a: map(lambda i: \
-        Asset(a.ticker + "#" + str(i), get_asset_price(a, t0),\
-         approximate_price_up(a.ticker, t0, t1, risk),\
-         approximate_price_down(a.ticker, t0, t1, risk), a.ticker), range(0, a.allocation)), allocations)
+    def split(a: Allocation):
+        price = get_asset_price(a, t0)
+        price_up = approximate_price_up(a.ticker, t0, t1, risk)
+        price_down = approximate_price_down(a.ticker, t0, t1, risk)
+        return map(lambda i: Asset(a.ticker + "#" + str(i), price, price_up, price_down, a.ticker), range(0, a.allocation))
+
+    fragmented = map(lambda a: split(a), allocations)
     return list(itertools.chain.from_iterable(fragmented))
 
 def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosition]:
