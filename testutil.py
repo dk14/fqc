@@ -40,7 +40,7 @@ def read_allocations(persent_to_unit, t0) -> list[Allocation]:
     with open('example_portfolio.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         def units(ticker, allocation, allocation_usd):
-            if t0 == 0:
+            if t0 == None:
                 return allocation * persent_to_unit
             else:
                 return allocation_usd / get_price(t0, ticker)
@@ -52,7 +52,7 @@ def read_allocations(persent_to_unit, t0) -> list[Allocation]:
 
 # todo: approximate price swings from (get_price(t1) - get_price(t0)) / get_price(t0)
 def approximate_price_up(ticker: str, t0, t1, risk: RiskModel) -> int:
-    if t0 == 0:
+    if t0 == None:
         return 100
     else: 
        diff = (get_price(t1, ticker) - get_price(t0, ticker)) / get_price(t0, ticker)
@@ -63,7 +63,7 @@ def approximate_price_up(ticker: str, t0, t1, risk: RiskModel) -> int:
            
 
 def approximate_price_down(ticker: str, t0, t1, risk: RiskModel) -> int:
-    if t0 == 0:
+    if t0 == None:
         return 10
     else: 
        diff = (get_price(t1, ticker) - get_price(t0, ticker)) / get_price(t0, ticker)
@@ -73,7 +73,7 @@ def approximate_price_down(ticker: str, t0, t1, risk: RiskModel) -> int:
            return risk.spread
 
 def get_asset_price(a: Allocation, t0) -> int:
-    if t0 == 0:
+    if t0 == None:
         return a.allocation_usd / a.allocation
     else:
         return get_price(t0, a.ticker)
@@ -90,7 +90,7 @@ def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosi
     k = int(open_positions_ratio * n)
     return list(map(lambda x: HoldingPosition(x), assets[:k]))
 
-def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0 = 0, t1 = 0, open_positions_ratio = 0.6, risk: RiskModel = RiskModel()) -> Market:
+def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0 = None, t1 = None, open_positions_ratio = 0.6, risk: RiskModel = RiskModel()) -> Market:
     allocations = read_allocations(persent_to_unit, t0)
     allocations.sort(key = lambda x: x.ticker)
     assets_of_interest = get_assets(allocations, t0, t1, risk)

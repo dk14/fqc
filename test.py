@@ -91,7 +91,7 @@ class Testing(unittest.TestCase):
             #dump('decisions_chunk_q', result)
             self.assertEqual(result, load('decisions_chunk_q'))
             
-    def backtest_ham_q(self):
+    def backtest_ham_q(self): #todo fix and test
         return
         t0 = 100
         t1 = 1000
