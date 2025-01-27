@@ -83,12 +83,18 @@ class Testing(unittest.TestCase):
             #dump('decisions_chunk_q', result)
             self.assertEqual(result, load('decisions_chunk_q'))
             
-    def ignore_backtest_ham_q(self): #todo fix
+    # note: liquidity, is not taken into account (unconstrained optimization), potentially can penilize buys at t0 without sells
+    # note: zero-risk interest (and overall inflation of usd) not taking into account. time value for money is out of scope
+    def test_backtrack_ham_q(self): #todo fix
         t0 = datetime(2021, 5, 1)
         t1 = datetime(2022, 8, 1)
         market = read_portfolio(limit = 4, persent_to_unit = 1, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
+
+
         self.assertEqual(len(market.assets_of_interest), 4)
         self.assertEqual(len(market.positions), 2)
+
+        
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*qiskit.*')
             warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
@@ -98,24 +104,38 @@ class Testing(unittest.TestCase):
         
         to_sell = list(map(lambda x: x.asset, filter(lambda x: x.asset.name in result, market.positions)))
         to_buy = list(filter(lambda x: x.name in result and not x.name in to_sell, market.assets_of_interest))
+        to_hold = list(filter(lambda x: not x.name in result, market.assets_of_interest))
 
+        # we take projection in absense of data
         project_price_up: Callable[[Asset], int] = lambda x: x.price_t + x.price_t * x.swing_up / 100
         project_price_down: Callable[[Asset], int]  = lambda x: x.price_t - x.price_t * x.swing_down / 100
 
-        projected_profits = map(lambda x: project_price_up(x) if x in to_buy else project_price_down(x), market.assets_of_interest)
+        # buy t0, sell t1
+        profit_from_buying_at_t0: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_up(x)) - x.price_t
 
-        profit_from_buying: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_up(x)) - x.price_t
-        profit_from_selling: Callable[[Asset], int]  = lambda x: x.price_t - get_price(t1, x.ticker, project_price_down(x))
+        # sell t0
+        cash_from_selling_at_t0: Callable[[Asset], int]  = lambda x: x.price_t
 
-        real_profits = map(lambda x:  profit_from_buying(x) if x in to_buy else profit_from_selling(x), market.assets_of_interest)
+        # hold t0, sell t1
+        cash_from_selling_at_t1: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_down(x))
         
-        projected_revenue = sum(projected_profits)
-        real_revenue = sum(real_profits)
+        # backtracked portfolio value appreciation without taking any action
+        
+        no_action_fvs = map(lambda x:  cash_from_selling_at_t1(x.asset), market.positions)
+        future_value_without_action = sum(no_action_fvs)
 
-        print(projected_revenue)
-        print(real_revenue)
+        # backtracked profits from taking action  
+        
+        action_fvs = map(lambda x:  profit_from_buying_at_t0(x) \
+                         if x in to_buy else (cash_from_selling_at_t0(x) \
+                                              if x in to_sell else cash_from_selling_at_t1(x)), market.assets_of_interest)
+        
+        future_value_with_action = sum(action_fvs)
+        #print(future_value_with_action)
+        #print(future_value_without_action)
 
-        self.assertGreater(real_revenue, projected_revenue)
+        self.assertGreater(future_value_with_action, future_value_without_action)
+        
 
 
 
