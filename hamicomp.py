@@ -6,7 +6,7 @@ from qiskit_optimization import QuadraticProgram
 
 #formulate problem compatible with quadrantic program
 
-LinearFormula = dict[string, int]
+LinearFormula = dict[str, int]
 
 class HamiltonianComputer(Computer):
     def to_linear_formula(formula: Sum, acc: LinearFormula = {}) -> LinearFormula: 
@@ -18,7 +18,7 @@ class HamiltonianComputer(Computer):
                     formula = next
                     acc = {name: x} + acc
 
-    def formulate_problem(formula: Sum) -> QuadranticProgram:
+    def formulate_problem(formula: Sum) -> QuadraticProgram:
         qp = QuadraticProgram()
         vars = Computer.extract_vars(formula)
         for name in vars:
