@@ -92,7 +92,8 @@ class Testing(unittest.TestCase):
     def test_backtrack_ham_q(self): #todo fix
         t0 = datetime(2021, 5, 1)
         t1 = datetime(2022, 8, 1)
-        real_market = read_portfolio(limit = 4, point_to_unit = 100000, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
+        point_to_unit = 100000
+        real_market = read_portfolio(limit = 4, point_to_unit = point_to_unit, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
         market = real_market
 
         self.assertEqual(len(market.assets_of_interest), 4)
@@ -130,7 +131,7 @@ class Testing(unittest.TestCase):
         # backtracked portfolio value appreciation without taking any action
         
         no_action_fvs = map(lambda x:  cash_from_selling_at_t1(x.asset), market.positions)
-        future_value_without_action = sum(no_action_fvs)
+        future_value_without_action = sum(no_action_fvs) * point_to_unit
 
         # backtracked profits from taking action  
         
@@ -138,7 +139,7 @@ class Testing(unittest.TestCase):
                          if x in to_buy else (cash_from_selling_at_t0(x) \
                                               if x in to_sell else cash_from_selling_at_t1(x)), market.assets_of_interest)
         
-        future_value_with_action = sum(action_fvs)
+        future_value_with_action = sum(action_fvs)  * point_to_unit
         #print(future_value_with_action)
         #print(future_value_without_action)
 
