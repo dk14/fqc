@@ -9,6 +9,7 @@ from comp import *
 class Asset:
     name: str
     price_t: int
+    swing: int = 10
     unit_no: int = 0
 
 @dataclass
@@ -31,7 +32,7 @@ class ActingPosition:
     asset: Asset
 
 def predict(asset: Asset, swing: int) -> Prediction: 
-    return Prediction(asset, asset.price_t + swing, asset.price_t, asset.price_t - swing)
+    return Prediction(asset, asset.price_t + asset.price_t * asset.swing / 100, asset.price_t - asset.price_t * asset.swing / 100)
 
 def profit(prediction: Prediction, buy_sell: int) -> ProfitEstimator:
     return ProfitEstimator(prediction.asset, 
@@ -41,12 +42,12 @@ def profit(prediction: Prediction, buy_sell: int) -> ProfitEstimator:
 def add_formula_chunk(acc: Sum, profit: ProfitEstimator) -> Sum:
     return Sum(acc, Mul(profit1.profit_sum, profit1.asset.name))
 
-def optimize(computer: Computer, portfolio: list[HoldingPosition], assets_of_interest: list[Asset], swing: int) -> list[ActingPosition]:
+def optimize(computer: Computer, portfolio: list[HoldingPosition], assets_of_interest: list[Asset]) -> list[ActingPosition]:
     holding = portfolio.filter(lambda x: x.asset in assets_of_interest)
     candidates = portfolio.filter(lambda x: not x.asset in assets_of_interest)
 
-    sell_profits = holding.map(lambda x: profit(predict(x.asset, swing), 1))
-    buy_profits = candidates.map(lambda x: profit(predict(x.asset, swing), -1))
+    sell_profits = holding.map(lambda x: profit(predict(x.asset), 1))
+    buy_profits = candidates.map(lambda x: profit(predict(x.asset), -1))
     profits = buy_profits + sell_profits
 
     formula = reduce(add_formula_chunk, profits, Zero())
