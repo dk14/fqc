@@ -26,6 +26,8 @@ class Mul:
 VarState = dict[str, int]
 VarNames  = list[str]
 
+# abstract class representing any computer capable of running unconstrained solver
+# note: as with Langrangians, Hamiltonian constrained problems (budget for instance) can be converted to unconstrained ones, using penalties
 class Computer(ABC):
 
     def extract_vars(formula: Sum, acc: VarNames = []) -> VarNames:
