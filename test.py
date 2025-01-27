@@ -5,21 +5,12 @@ from clacomp import *
 from portfolio import *
 from hamicomp import *
 from testutil import *
-import json
 from datetime import datetime
+from typing import Callable
 
 appl = Asset("APPL", 100)
 btc = Asset("BTC", 200)
 math = Asset("MATH", 100)
-
-def dump(name: str, data):
-
-    with open(name + '.json', 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-
-def load(name: str):
-    with open(name + '.json') as f:
-        return json.load(f)
 
 class Testing(unittest.TestCase):
 
@@ -108,10 +99,15 @@ class Testing(unittest.TestCase):
         to_sell = list(map(lambda x: x.asset, filter(lambda x: x.asset.name in result, market.positions)))
         to_buy = list(filter(lambda x: x.name in result and not x.name in to_sell, market.assets_of_interest))
 
-        projected_profits = map(lambda x: x.price_t + x.price_t * x.swing_up / 100 if x in to_buy else x.price_t - x.price_t * x.swing_down / 100, market.assets_of_interest)
-        real_profits = map(lambda x: get_price(t1, x.ticker, x.price_t + x.swing_up * x.price_t / 100) - x.price_t \
-                           if x in to_buy \
-                            else x.price_t - get_price(t1, x.ticker, x.price_t - x.swing_down * x.price_t / 100), market.assets_of_interest)
+        project_price_up: Callable[[Asset], int] = lambda x: x.price_t + x.price_t * x.swing_up / 100
+        project_price_down: Callable[[Asset], int]  = lambda x: x.price_t - x.price_t * x.swing_down / 100
+
+        profit_from_buying: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_up(x)) - x.price_t
+        profit_from_selling: Callable[[Asset], int]  = lambda x: x.price_t - get_price(t1, x.ticker, project_price_down(x))
+
+        projected_profits = map(lambda x: project_price_up(x) if x in to_buy else project_price_down(x), market.assets_of_interest)
+
+        real_profits = map(lambda x:  profit_from_buying(x) if x in to_buy else profit_from_selling(x), market.assets_of_interest)
         
         projected_revenue = sum(projected_profits)
         real_revenue = sum(real_profits)

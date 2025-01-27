@@ -5,8 +5,30 @@ from functools import reduce
 import csv
 import itertools
 import yfinance as yf
-from datetime import timedelta
-from typing import Optional
+from datetime import datetime, timedelta
+from typing import Optional, TypeVar, Callable
+import json
+
+T = TypeVar('T')
+def dump(name: str, data: T):
+
+    with open(name + '.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+def load(name: str) -> T:
+    with open(name + '.json') as f:
+        return json.load(f)
+    
+delimiter = '::'
+date_format = '%m/%d/%Y'
+
+def encode(cache: dict[tuple[datetime, str], int]) -> dict[str, int]:
+    encode_key: Callable[[tuple[datetime, str]], str] = lambda k: k[0].strftime(date_format) + delimiter + k[1]
+    return { encode_key(k) : cache[k] for k in cache }
+
+def decode(cache_data:dict[str, int]) -> dict[(datetime, str), int]:
+    decode_key: Callable[[str], tuple[datetime, str]]  = lambda k: (datetime.strptime(k.split(delimiter)[0], date_format), k.split(delimiter)[1])
+    return { decode_key(k) : cache_data[k] for k in cache_data }
 
 @dataclass
 class Allocation:
@@ -31,15 +53,22 @@ def sum_allocations_by_ticker(allocations: list[Allocation]) -> list[Allocation]
     return list(map(lambda g: Allocation(g[0].ticker, reduce(add, map(lambda x: x.allocation, g)), reduce(add, map(lambda x: x.allocation_usd, g))), grouped))
 
 
-def get_price(date, ticker: str, default = None):
+price_cache: dict[(datetime, str), int] = {}
+
+def get_price(date, ticker: str, default = None) -> int:
+    if (date, ticker) in price_cache:
+        return price_cache[(date, ticker)]
+    
     yticker = yf.Ticker(ticker)
     final_time = date + timedelta(days=40)
-    prices = yticker.history(start=date, end=final_time, interval='1d')['Close'].iloc
+    prices = list(yticker.history(start=date, end=final_time, interval='1d')['Close'].iloc)
     print(ticker)
     if len(list(prices)) == 0:
+        price_cache[(date, ticker)] = default
         return default
     else:
         print(prices[0])
+        price_cache[(date, ticker)] = int(prices[0])
         return int(prices[0])
 
 def read_allocations(persent_to_unit, t0) -> list[Allocation]:
@@ -107,6 +136,8 @@ def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosi
     return list(map(lambda x: HoldingPosition(x), assets[:k]))
 
 def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0 = None, t1 = None, open_positions_ratio = 0.6, risk: RiskModel = RiskModel()) -> Market:
+    global price_cache
+    price_cache = decode(load('price_cache'))
     allocations = read_allocations(persent_to_unit, t0)
     allocations.sort(key = lambda x: x.ticker)
     assets_of_interest = get_assets(allocations, t0, t1, risk)
@@ -114,4 +145,5 @@ def read_portfolio(limit: Optional[int] = None, persent_to_unit = 10, t0 = None,
     assets_of_interest = assets_of_interest[:limit]
     portfolio = get_positions(assets_of_interest, open_positions_ratio)
     portfolio.sort(key = lambda x: x.asset.name)
+    dump('price_cache', encode(price_cache))
     return Market(assets_of_interest, portfolio)
