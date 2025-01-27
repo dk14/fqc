@@ -13,10 +13,10 @@ class HamiltonianComputer(Computer):
          while True:
             match formula:
                 case Sum(Zero(), Mul(x, name)):
-                    return {name: x} + acc
+                    return {name: x} | acc
                 case Sum(next, Mul(x, name)):
                     formula = next
-                    acc = {name: x} + acc
+                    acc = {name: x} | acc
 
     def formulate_problem(formula: Sum) -> QuadraticProgram:
         qp = QuadraticProgram()
