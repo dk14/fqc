@@ -5,6 +5,7 @@ from functools import reduce
 import csv
 import itertools
 import yfinance as yf
+from datetime import datetime, timedelta
 
 @dataclass
 class Allocation:
@@ -31,7 +32,7 @@ def read_allocations(persent_to_unit) -> list[Allocation]:
 def get_price(date, ticker: str):
     ticker = yf.Ticker(ticker)
     final_time = date + timedelta(days=1)
-    return ticker.history(start=datetime_object, end=final_time, interval='1m')['Close'].iloc[-1]
+    return ticker.history(start=date, end=final_time, interval='1m')['Close'].iloc[-1]
 
 # todo: approximate price swings from (get_price(t1) - get_price(t0)) / get_price(t0)
 def approximate_price_up(ticker: str, t0, t1) -> int:
