@@ -21,7 +21,7 @@ $$\max_q \sum_i profitForecast_i * qubit(q, i)$$
 
 *Note: Constrained Hamiltonian problems, akin to Lagrangians, are convertable to unconstrained ones by introducing penalizing terms*
 
-- [clacomp.py](clacomp.py) contains regular computer, capable solving problem through permutation.
+- [clacomp.py](clacomp.py) contains regular computer, capable of solving through permutation.
 
 - [hamicomp.py](hamicomp.py) contains Hamiltonian solvers (classic Eigensolver and simulated quantum SamplingVQE), running in qiskit simulator.
 
@@ -29,10 +29,10 @@ $$\max_q \sum_i profitForecast_i * qubit(q, i)$$
 
 ----
 ### Assumptions:
-- prices are not correlated, problem is linear. 
+- prices are not correlated, thus problem is linear. 
 
 *Note: Introducing covariance matricies would make problem quadratic and would require divide and conquer segmentation of matrix for large portfolios. This implies that covarience matrix should be as sparse as possible with "islands" of relations corresponding to segments, e.g. industry sectors.*
 
 - no budget/liquidity constraints so far
-- zero-risk rate is 0%. FV comes purely from selling asset at $t_1$. USD's value doesn't change over time (fixed-rate asset).
+- zero-risk rate is 0%. FV comes purely from selling asset at $t_1$. USD's value doesn't change over time (USD assumed to be a fixed-rate asset, no inflation, no such thing much).
 
