@@ -10,6 +10,25 @@ from typing import Optional, TypeVar, Callable
 import json
 
 
+
+#config
+
+@dataclass
+class BacktestConfig:
+    computer: str = "ham_q" # cla, ham_c
+    limit: str = 15
+    qbits: int = 3
+    point_to_unit: int = 100000
+    risk_lev: int = 1
+    risk_spre: int = 0
+    t0y: int = 2021
+    t0m: int = 5
+    t0d: int = 1
+    t1y: int = 2022
+    t1m: int = 8
+    t1d: int = 1
+
+
 #csv reporting
 
 @dataclass

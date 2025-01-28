@@ -1,0 +1,14 @@
+{
+    "computer": "ham_q",
+    "limit": 15,
+    "qbits": 3,
+    "point_to_unit": 100000,
+    "risk_lev": 1,
+    "risk_spre": 0,
+    "t0y": 2021,
+    "t0m": 5,
+    "t0d": 1,
+    "t1y": 2022,
+    "t1m": 8,
+    "t1d": 1
+}

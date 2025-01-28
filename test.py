@@ -7,6 +7,7 @@ from hamicomp import *
 from testutil import *
 from datetime import datetime
 from typing import Callable
+from dataclasses import make_dataclass, asdict
 
 appl = Asset("APPL", 100)
 btc = Asset("BTC", 200)
@@ -91,10 +92,16 @@ class Testing(unittest.TestCase):
     # note: USD holdings from immediate sell (at t0) are considered part of future value. USD is both metric and an asset on its own
     def test_backtest_ham_q(self): #todo fix
 
-        t0 = datetime(2021, 5, 1)
-        t1 = datetime(2022, 8, 1)
-        point_to_unit = 100000
-        real_market = read_portfolio(limit = 15, point_to_unit = point_to_unit, t0 = t0, t1 = t1, risk = RiskModel(1, 0))
+        #cfg = BacktestConfig()
+        #dump('backtest_config', asdict(cfg))
+        cfg_raw = load('backtest_config')
+        cfg: BacktestConfig = make_dataclass( "BacktestConfig", ((k, type(v)) for k, v in cfg_raw.items()))(**cfg_raw)
+        
+        t0 = datetime(cfg.t0y, cfg.t0m, cfg.t0d)
+        t1 = datetime(cfg.t1y, cfg.t1m, cfg.t1d)
+ 
+        point_to_unit = cfg.point_to_unit
+        real_market = read_portfolio(limit = cfg.limit, point_to_unit = point_to_unit, t0 = t0, t1 = t1, risk = RiskModel(cfg.risk_lev, cfg.risk_spre))
         market = real_market
 
         #self.assertEqual(len(market.assets_of_interest), 4)
@@ -106,8 +113,17 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
 
-            actions = optimize_agg(3, HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)
-            # simulator bug?? limit = 10, qbits = 3, qiskit.exceptions.QiskitError: 'block_size (2) cannot be larger than number of qubits (1)'
+            def get_computer(name: str):
+                match name:
+                    case "cla":
+                        return ClassicComputer()
+                    case "ham_q":
+                        return HamiltonianComputerQuantum()
+                    case "ham_c":
+                        return HamiltonianComputerClassicEigen()
+
+            actions = optimize_agg(cfg.qbits, get_computer(cfg.computer), market.positions, market.assets_of_interest)
+            # simulator bug?? ham_q, limit = 10, qbits = 3, qiskit.exceptions.QiskitError: 'block_size (2) cannot be larger than number of qubits (1)'
             result = [x.asset.name for x in actions]
             dump('actions_backtesting', result)
         
