@@ -19,7 +19,7 @@ We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to optim
 
 $$\max_q \sum_i profitForecast_i * qubit(q, i)$$
 
-*Note: Constrained Hamiltonian problems, akin to Lagrangians, are convertable to constrained ones by introducing penalizing terms*
+*Note: Constrained Hamiltonian problems, akin to Lagrangians, are convertable to unconstrained ones by introducing penalizing terms*
 
 - [clacomp.py](clacomp.py) contains regular computer, capable solving problem through permutation.
 
