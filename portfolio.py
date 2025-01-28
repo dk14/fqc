@@ -70,6 +70,7 @@ def optimize(computer: Computer, portfolio: list[HoldingPosition], assets_of_int
     
     return list(map(lambda x: ActingPosition(x), filter(lambda x: x.name in result, assets_of_interest)))
 
+# since variables (asset prices) are independent (thus problem is linear), we just split assets in chunks and aggregate all actions
 def optimize_agg(qbits: int, computer: Computer, portfolio: list[HoldingPosition], assets_of_interest: list[Asset]) -> list[ActingPosition]:
    chunks = [assets_of_interest[x:x+qbits] for x in range(0, len(assets_of_interest), qbits)]
    results = [optimize(computer, portfolio, chunk) for chunk in chunks]
