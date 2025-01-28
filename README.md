@@ -34,6 +34,6 @@ $$\max_q \sum_i profitLossForecast_i * qubit(q, i)$$
 *Note: Introducing covariance matricies would make problem quadratic and would require divide and conquer segmentation of matrix for large portfolios. This implies that covarience matrix should be as sparse as possible with "islands" of relations corresponding to segments, e.g. industry sectors.*
 
 - no budget/liquidity constraints so far
-- zero-risk rate is 0%. FV comes purely from selling asset at $t_1$. USD's value doesn't change over time (USD assumed to be a fixed-rate asset, no inflation, no such thing much).
-- concious action is assumed to be possible between $t_0$ and $t_1$. Food/Oxygen/Energy (finite resources for human) is assumed be available to a trader within that period.
+- zero-risk rate is 0%. FV comes purely from selling asset at $t_1$. <del>BTC</del>USD's purchase value doesn't depreciate/fluctuate over time and location (USD assumed to be a fixed-rate asset, no inflation, no such thing much).
+- concious action is assumed to be possible between $t_0$ and $t_1$. Food/Oxygen/Energy (finite resources for human) is assumed be available to a trader within that period. Population growth is okay, farming lands are fine, wars and pandemics are tolerable, under assumtions of this model.
 
