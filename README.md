@@ -8,7 +8,7 @@
 
     Suggested actions to take are dumped to [acions_backtracking.json](actions_backtracking.json). 
 
-*Semantics: Action closes existing position in portfolio if there is one or opens new one if position did not exist.*
+*Semantics: Action closes existing position in portfolio if there is one or opens a new one if position did not exist.*
 
 - [portfolio.py](portfolio.py) contains portfolio optimizer. `optimize` runs maximization for small portfolios, `optimize_agg` runs it for arbitrarily large ones. *Note: aggregation is trivial for non-correlated assets*. We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to optimize allocations as well.
 
@@ -18,9 +18,9 @@ $$\max_q \sum_i profitForecast_i * qubit(q, i)$$
 
 *Note: Constrained Hamiltonian problems, akin to Lagrangians, are convertable to constrained ones by introducing penalizing terms*
 
-- [clacomp.py](clacomp.py) contains regular computer solving problem through permutation.
+- [clacomp.py](clacomp.py) contains regular computer, capable solving problem through permutation.
 
-- [hamicomp.py](hamicomp.py) contains Hamiltonian solver (classic Eigensolver and simulated quantum SamplingVQE), running in qiskit simulator.
+- [hamicomp.py](hamicomp.py) contains Hamiltonian solvers (classic Eigensolver and simulated quantum SamplingVQE), running in qiskit simulator.
 
 - [testutil.py](testutil.py) contains portfolio reader and yfinance.
 
