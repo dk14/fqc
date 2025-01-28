@@ -31,7 +31,7 @@ $$\max_q \sum_i profitLossForecast_i * qubit(q, i)$$
 ### Assumptions:
 - prices are not correlated, thus problem is linear. 
 
-*Note: Introducing covariance matricies would make problem quadratic and would require divide and conquer segmentation of matrix for large portfolios. This implies that covarience matrix should be as sparse as possible with "islands" of relations corresponding to segments, e.g. industry sectors.*
+*Note: Introducing covariance matricies would make problem quadratic and would require divide and conquer segmentation of matrix for large portfolios. This implies that covarience matrix should be as sparse as possible with "islands" (around diagonal) of relations corresponding to segments, e.g. industry sectors.*
 
 - no budget/liquidity constraints so far
 - zero-risk rate is 0%. FV comes purely from selling asset at $t_1$. <del>BTC</del>USD's purchase value doesn't depreciate/fluctuate over time and location (USD assumed to be a fixed-rate asset, no inflation, no such thing much).
