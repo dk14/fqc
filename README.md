@@ -15,7 +15,7 @@ We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to optim
 
 *Note: aggregation (divide and conquer) is trivial for non-correlated assets*
 
-- [comp.py](comp.py) contains abstract `Computer` and DSL for linear unconstrained optimization (max weighted sum). It can run on any quantum/classic engine (e.g. qiskit)
+- [comp.py](comp.py) contains abstract `Computer` and DSL for linear **unconstrained** optimization (max weighted sum). It can run on any quantum/classic engine (e.g. qiskit)
 
 $$\max_q \sum_i profitForecast_i * qubit(q, i)$$
 
