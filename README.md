@@ -35,4 +35,5 @@ $$\max_q \sum_i profitForecast_i * qubit(q, i)$$
 
 - no budget/liquidity constraints so far
 - zero-risk rate is 0%. FV comes purely from selling asset at $t_1$. USD's value doesn't change over time (USD assumed to be a fixed-rate asset, no inflation, no such thing much).
+- concious action is assumed to be possible between $t_0$ and $t_1$. Food/Oxygen/Energy (finite resources for human) is assumed be available to a trader within that period.
 
