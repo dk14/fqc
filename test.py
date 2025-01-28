@@ -109,6 +109,7 @@ class Testing(unittest.TestCase):
             actions = optimize_agg(3, HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)
             # simulator bug?? limit = 10, qbits = 3, qiskit.exceptions.QiskitError: 'block_size (2) cannot be larger than number of qubits (1)'
             result = [x.asset.name for x in actions]
+            dump('actions_backtracking', result)
         
         to_sell = [x.asset for x in market.positions if x.asset.name in result]
         to_buy = [x for x in market.assets_of_interest if x.name in result and not x in to_sell]
@@ -145,6 +146,8 @@ class Testing(unittest.TestCase):
         future_value_with_action = sum(action_fvs) * point_to_unit
         #print(future_value_with_action)
         #print(future_value_without_action)
+
+        #todo output csv with [asset, price_t0, price_t1, suggested_action, FV_no_action, FV_action]
 
         self.assertGreater(future_value_with_action, future_value_without_action)
         
