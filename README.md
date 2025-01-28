@@ -17,7 +17,7 @@ We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to optim
 
 - [comp.py](comp.py) contains abstract `Computer` and DSL for linear **unconstrained** optimization (max weighted sum). It can run on any quantum/classic engine (e.g. qiskit)
 
-$$\max_q \sum_i profitForecast_i * qubit(q, i)$$
+$$\max_q \sum_i profitLossForecast_i * qubit(q, i)$$
 
 *Note: Constrained Hamiltonian problems, akin to Lagrangians, are convertable to unconstrained ones by introducing penalizing terms*
 
