@@ -11,7 +11,7 @@
 *Semantics: Action closes existing position in portfolio if there is one or opens a new one if position did not exist.*
 
 - [portfolio.py](portfolio.py) contains portfolio optimizer. `optimize` runs maximization for small portfolios, `optimize_agg` runs it for arbitrarily large ones. 
-We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to optimize allocations as well.
+We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to potentially optimize allocations as well.
 
 *Note: aggregation (divide and conquer) is trivial for non-correlated assets*
 
