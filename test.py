@@ -141,13 +141,13 @@ class Testing(unittest.TestCase):
         project_price_down: Callable[[Asset], int]  = lambda x: x.price_t - x.price_t * x.swing_down / 100
 
         # buy t0, sell t1 (liquidity note: immediate zero-interest loan assumed)
-        profit_from_buying_at_t0: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_up(x)) - x.price_t
+        profit_from_buying_at_t0: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, default = project_price_up(x)) - x.price_t
 
         # sell t0
         cash_from_selling_at_t0: Callable[[Asset], int]  = lambda x: x.price_t
 
         # hold t0, sell t1
-        cash_from_selling_at_t1: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_down(x))
+        cash_from_selling_at_t1: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, default = project_price_down(x))
         
         # backtested portfolio value without taking any action
         
@@ -168,7 +168,7 @@ class Testing(unittest.TestCase):
         report = [Report(x.name,
                 x in in_portfolio,
                 x.price_t, 
-                get_price(t1, x.ticker, project_price_down(x)), 
+                get_price(t1, x.ticker, default = project_price_down(x)), 
                 "BUY" if x in to_buy else "SELL" if x in to_sell else "NONE", 
                 cash_from_selling_at_t1(x) * point_to_unit if x in in_portfolio else 0,  
                 action_fv(x) * point_to_unit,
