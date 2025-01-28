@@ -9,6 +9,31 @@ from datetime import datetime, timedelta
 from typing import Optional, TypeVar, Callable
 import json
 
+
+#csv reporting
+
+@dataclass
+class Report:
+    asset: str
+    in_portfolio: bool
+    price_t0: int
+    price_t1: int
+    suggested_action: str
+    FV_no_action: int
+    FV_action: int
+
+def dump_csv_report(data: list[Report]): 
+    with open('report.csv', 'w') as f:
+        header = ['Asset', 'Portfolio', 'Price t0', 'Price t1', "Action", "FV No Action", "FV Action"]
+        row_format = '{:<10}  {:<10}  {:<10}  {:<10}  {:<7}  {:<12}  {:<12}'
+        print(row_format.format(*header), file=f)
+        for x in data:
+            row = [x.asset, str(x.in_portfolio), str(x.price_t0), str(x.price_t1), x.suggested_action, x.FV_no_action, x.FV_action]
+            print(row_format.format(*row), file=f)
+
+
+
+# json import export
 T = TypeVar('T')
 def dump(name: str, data: T):
 
@@ -22,6 +47,7 @@ def load(name: str) -> T:
 delimiter = '::'
 date_format = '%m/%d/%Y'
 
+# for price cache
 def encode(cache: dict[tuple[datetime, str], int]) -> dict[str, int]:
     encode_key: Callable[[tuple[datetime, str]], str] = lambda k: k[0].strftime(date_format) + delimiter + k[1]
     return { encode_key(k) : cache[k] for k in cache }

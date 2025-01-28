@@ -94,7 +94,7 @@ class Testing(unittest.TestCase):
         t0 = datetime(2021, 5, 1)
         t1 = datetime(2022, 8, 1)
         point_to_unit = 100000
-        real_market = read_portfolio(limit = 15, point_to_unit = point_to_unit, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
+        real_market = read_portfolio(limit = 15, point_to_unit = point_to_unit, t0 = t0, t1 = t1, risk = RiskModel(1, 0))
         market = real_market
 
         #self.assertEqual(len(market.assets_of_interest), 4)
@@ -111,8 +111,9 @@ class Testing(unittest.TestCase):
             result = [x.asset.name for x in actions]
             dump('actions_backtesting', result)
         
+        in_portfolio = [x.asset for x in market.positions]
         to_sell = [x.asset for x in market.positions if x.asset.name in result]
-        to_buy = [x for x in market.assets_of_interest if x.name in result and not x in to_sell]
+        to_buy = [x for x in market.assets_of_interest if x.name in result and not x in in_portfolio]
         to_hold = [x for x in market.assets_of_interest if not x.name in result] 
 
         #print(to_sell)
@@ -139,16 +140,24 @@ class Testing(unittest.TestCase):
 
         # backtested profits from taking action  
         
-        action_fvs = map(lambda x:  profit_from_buying_at_t0(x) \
+        action_fv: Callable[[Asset], int] = lambda x:  profit_from_buying_at_t0(x) \
                          if x in to_buy else (cash_from_selling_at_t0(x) \
-                                              if x in to_sell else cash_from_selling_at_t1(x)), market.assets_of_interest)
+                                              if x in to_sell else cash_from_selling_at_t1(x))
+        action_fvs = map(action_fv, market.assets_of_interest)
         
         future_value_with_action = sum(action_fvs) * point_to_unit
         #print(future_value_with_action)
         #print(future_value_without_action)
 
-        #todo output csv with [asset, price_t0, price_t1, suggested_action, FV_no_action, FV_action]
+        report = [Report(x.name,
+                x in in_portfolio,
+                x.price_t, 
+                get_price(t1, x.ticker, project_price_down(x)), 
+                "BUY" if x in to_buy else "SELL" if x in to_sell else "NONE", 
+                cash_from_selling_at_t1(x),  
+                action_fv(x)) for x in market.assets_of_interest]
 
+        dump_csv_report(report)
         self.assertGreater(future_value_with_action, future_value_without_action)
         
 if __name__ == '__main__':

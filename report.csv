@@ -1,0 +1,16 @@
+Asset       Portfolio   Price t0    Price t1    Action   FV No Action  FV Action   
+AAPL#0      True        129         159         NONE     159           159         
+ADBE#0      True        503         411         SELL     411           503         
+AMZN#0      True        169         135         SELL     135           169         
+BABA#0      True        222         87          SELL     87            222         
+BASFY#0     True        16          9           SELL     9             16          
+BASFY#1     True        16          9           SELL     9             16          
+BASFY#10    True        16          9           SELL     9             16          
+BASFY#11    True        16          9           SELL     9             16          
+BASFY#12    True        16          9           SELL     9             16          
+BASFY#13    False       16          9           NONE     9             9           
+BASFY#14    False       16          9           NONE     9             9           
+BASFY#2     False       16          9           NONE     9             9           
+BASFY#3     False       16          9           NONE     9             9           
+BASFY#4     False       16          9           NONE     9             9           
+BASFY#5     False       16          9           NONE     9             9           
