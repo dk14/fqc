@@ -10,7 +10,7 @@
 
 *Semantics: Action closes existing position in portfolio if there is one or opens a new one if position did not exist. Suggested actions to take are dumped into [actions_backtesting.json](actions_backtesting.json)*
 
-- [portfolio.py](portfolio.py) contains portfolio optimizer. `optimize` runs maximization for small portfolios, `optimize_agg` runs it for arbitrarily large ones. 
+- [portfolio.py](portfolio.py) contains portfolio optimizer. `optimize` runs maximization for small portfolios, `optimize_agg` runs it for arbitrarily large ones (given that portfolio fits classic RAM). 
 We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to potentially optimize allocations as well.
 
 *Note: aggregation (divide and conquer) is trivial for non-correlated assets*
