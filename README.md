@@ -6,7 +6,7 @@
 
     ``python3 test.py``
 
-    Suggested actions to take are dumped into [actions_backtesting.json](actions_backtesting.json). 
+    Suggested actions to take are dumped into [actions_backtesting.json](actions_backtesting.json). Full backtesting report is in [report.csv](report.csv)
 
 *Semantics: Action closes existing position in portfolio if there is one or opens a new one if position did not exist.*
 
