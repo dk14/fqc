@@ -170,8 +170,10 @@ class Testing(unittest.TestCase):
                 x.price_t, 
                 get_price(t1, x.ticker, project_price_down(x)), 
                 "BUY" if x in to_buy else "SELL" if x in to_sell else "NONE", 
-                cash_from_selling_at_t1(x) * point_to_unit,  
-                action_fv(x) * point_to_unit) for x in market.assets_of_interest]
+                cash_from_selling_at_t1(x) * point_to_unit if x in in_portfolio else 0,  
+                action_fv(x) * point_to_unit,
+                action_fv(x) * point_to_unit - (cash_from_selling_at_t1(x) * point_to_unit if x in in_portfolio else 0)) 
+                    for x in market.assets_of_interest]
 
         dump_csv_report(report)
         self.assertGreater(future_value_with_action, future_value_without_action)

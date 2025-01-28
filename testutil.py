@@ -40,14 +40,15 @@ class Report:
     suggested_action: str
     FV_no_action: int
     FV_action: int
+    delta: int
 
 def dump_csv_report(data: list[Report]): 
     with open('report.csv', 'w') as f:
-        header = ['Asset', 'Portfolio', 'Price t0', 'Price t1', "Action", "FV No Action", "FV Action"]
-        row_format = '{:<10}  {:<10}  {:<10}  {:<10}  {:<7}  {:<12}  {:<12}'
+        header = ['Asset', 'Portfolio', 'Price t0', 'Price t1', "Action", "FV No Action", "FV Action", "Delta"]
+        row_format = '{:<15}  {:<10}  {:<10}  {:<10}  {:<7}  {:<12}  {:<12}  {:<12}'
         print(row_format.format(*header), file=f)
         for x in data:
-            row = [x.asset, str(x.in_portfolio), str(x.price_t0), str(x.price_t1), x.suggested_action, x.FV_no_action, x.FV_action]
+            row = [x.asset, str(x.in_portfolio), str(x.price_t0), str(x.price_t1), x.suggested_action, x.FV_no_action, x.FV_action, x.delta]
             print(row_format.format(*row), file=f)
 
 

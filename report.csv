@@ -1,16 +1,61 @@
-Asset       Portfolio   Price t0    Price t1    Action   FV No Action  FV Action   
-AAPL#0      True        129         159         NONE     15900000      15900000    
-ADBE#0      True        503         411         SELL     41100000      50300000    
-AMZN#0      True        169         135         SELL     13500000      16900000    
-BABA#0      True        222         87          SELL     8700000       22200000    
-BASFY#0     True        16          9           SELL     900000        1600000     
-BASFY#1     True        16          9           SELL     900000        1600000     
-BASFY#10    True        16          9           SELL     900000        1600000     
-BASFY#11    True        16          9           SELL     900000        1600000     
-BASFY#12    True        16          9           SELL     900000        1600000     
-BASFY#13    False       16          9           NONE     900000        900000      
-BASFY#14    False       16          9           NONE     900000        900000      
-BASFY#2     False       16          9           NONE     900000        900000      
-BASFY#3     False       16          9           NONE     900000        900000      
-BASFY#4     False       16          9           NONE     900000        900000      
-BASFY#5     False       16          9           NONE     900000        900000      
+Asset            Portfolio   Price t0    Price t1    Action   FV No Action  FV Action     Delta       
+AAPL#0           True        129         159         NONE     15900000      15900000      0           
+ADBE#0           True        503         411         SELL     41100000      50300000      9200000     
+AMZN#0           True        169         135         SELL     13500000      16900000      3400000     
+BABA#0           True        222         87          SELL     8700000       22200000      13500000    
+BASFY#0          True        16          9           SELL     900000        1600000       700000      
+BASFY#1          True        16          9           SELL     900000        1600000       700000      
+BASFY#10         True        16          9           SELL     900000        1600000       700000      
+BASFY#11         True        16          9           SELL     900000        1600000       700000      
+BASFY#12         True        16          9           SELL     900000        1600000       700000      
+BASFY#13         True        16          9           SELL     900000        1600000       700000      
+BASFY#14         True        16          9           SELL     900000        1600000       700000      
+BASFY#2          True        16          9           SELL     900000        1600000       700000      
+BASFY#3          True        16          9           SELL     900000        1600000       700000      
+BASFY#4          True        16          9           SELL     900000        1600000       700000      
+BASFY#5          True        16          9           SELL     900000        1600000       700000      
+BASFY#6          True        16          9           SELL     900000        1600000       700000      
+BASFY#7          True        16          9           SELL     900000        1600000       700000      
+BASFY#8          True        16          9           SELL     900000        1600000       700000      
+BASFY#9          True        16          9           SELL     900000        1600000       700000      
+BNTX#0           True        206         163         SELL     16300000      20600000      4300000     
+BP#0             True        21          25          NONE     2500000       2500000       0           
+BP#1             True        21          25          NONE     2500000       2500000       0           
+BRK.B#0          True        100         200         NONE     20000000      20000000      0           
+BRK.B#1          True        100         200         NONE     20000000      20000000      0           
+BRK.B#10         True        100         200         NONE     20000000      20000000      0           
+BRK.B#100        True        100         200         NONE     20000000      20000000      0           
+BRK.B#1000       True        100         200         NONE     20000000      20000000      0           
+BRK.B#10000      True        100         200         NONE     20000000      20000000      0           
+BRK.B#100000     True        100         200         NONE     20000000      20000000      0           
+BRK.B#100001     True        100         200         NONE     20000000      20000000      0           
+BRK.B#100002     True        100         200         NONE     20000000      20000000      0           
+BRK.B#100003     True        100         200         NONE     20000000      20000000      0           
+BRK.B#100004     True        100         200         NONE     20000000      20000000      0           
+BRK.B#100005     True        100         200         NONE     20000000      20000000      0           
+BRK.B#100006     True        100         200         NONE     20000000      20000000      0           
+BRK.B#100007     True        100         200         NONE     20000000      20000000      0           
+BRK.B#100008     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100009     False       100         200         BUY      0             10000000      10000000    
+BRK.B#10001      False       100         200         BUY      0             10000000      10000000    
+BRK.B#100010     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100011     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100012     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100013     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100014     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100015     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100016     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100017     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100018     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100019     False       100         200         BUY      0             10000000      10000000    
+BRK.B#10002      False       100         200         BUY      0             10000000      10000000    
+BRK.B#100020     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100021     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100022     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100023     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100024     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100025     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100026     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100027     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100028     False       100         200         BUY      0             10000000      10000000    
+BRK.B#100029     False       100         200         BUY      0             10000000      10000000    
