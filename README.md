@@ -10,7 +10,10 @@
 
 *Semantics: Action closes existing position in portfolio if there is one or opens a new one if position did not exist.*
 
-- [portfolio.py](portfolio.py) contains portfolio optimizer. `optimize` runs maximization for small portfolios, `optimize_agg` runs it for arbitrarily large ones. *Note: aggregation is trivial for non-correlated assets*. We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to optimize allocations as well.
+- [portfolio.py](portfolio.py) contains portfolio optimizer. `optimize` runs maximization for small portfolios, `optimize_agg` runs it for arbitrarily large ones. 
+We split every asset into tradable units (e.g. AMZN#0, AMZN#1) in order to optimize allocations as well.
+
+*Note: aggregation (divide and conquer) is trivial for non-correlated assets*
 
 - [comp.py](comp.py) contains abstract `Computer` and DSL for linear unconstrained optimization (max weighted sum). It can run on any quantum/classic engine (e.g. qiskit)
 
