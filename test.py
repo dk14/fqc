@@ -89,7 +89,7 @@ class Testing(unittest.TestCase):
     # note: liquidity, is not taken into account (unconstrained optimization), potentially can penilize buys at t0 without sells
     # note: zero-risk interest (and overall inflation of usd) not taking into account. time value for money is out of scope
     # note: USD holdings from immediate sell (at t0) are considered part of future value. USD is both metric and an asset on its own
-    def test_backtrack_ham_q(self): #todo fix
+    def test_backtest_ham_q(self): #todo fix
 
         t0 = datetime(2021, 5, 1)
         t1 = datetime(2022, 8, 1)
@@ -109,7 +109,7 @@ class Testing(unittest.TestCase):
             actions = optimize_agg(3, HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)
             # simulator bug?? limit = 10, qbits = 3, qiskit.exceptions.QiskitError: 'block_size (2) cannot be larger than number of qubits (1)'
             result = [x.asset.name for x in actions]
-            dump('actions_backtracking', result)
+            dump('actions_backtesting', result)
         
         to_sell = [x.asset for x in market.positions if x.asset.name in result]
         to_buy = [x for x in market.assets_of_interest if x.name in result and not x in to_sell]
@@ -132,12 +132,12 @@ class Testing(unittest.TestCase):
         # hold t0, sell t1
         cash_from_selling_at_t1: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_down(x))
         
-        # backtracked portfolio value appreciation without taking any action
+        # backtested portfolio value appreciation without taking any action
         
         no_action_fvs = map(lambda x:  cash_from_selling_at_t1(x.asset), market.positions)
         future_value_without_action = sum(no_action_fvs) * point_to_unit
 
-        # backtracked profits from taking action  
+        # backtested profits from taking action  
         
         action_fvs = map(lambda x:  profit_from_buying_at_t0(x) \
                          if x in to_buy else (cash_from_selling_at_t0(x) \

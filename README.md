@@ -2,11 +2,11 @@
 
 ## Linear Quantum Portfolio Optimizer
 
-- [test.py](test.py) contains unit tests and backtracking (against [example](example_portfolio.csv) and yfinance prices). 
+- [test.py](test.py) contains unit tests and backtesting (against [example](example_portfolio.csv) and yfinance prices). 
 
     ``python3 test.py``
 
-    Suggested actions to take are dumped to [actions_backtracking.json](actions_backtracking.json). 
+    Suggested actions to take are dumped to [actions_backtesting.json](actions_backtesting.json). 
 
 *Semantics: Action closes existing position in portfolio if there is one or opens a new one if position did not exist.*
 
