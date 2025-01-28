@@ -90,7 +90,7 @@ class Testing(unittest.TestCase):
     # note: liquidity, is not taken into account (unconstrained optimization), potentially can penilize buys at t0 without sells
     # note: zero-risk interest (and overall inflation of usd) not taking into account. time value for money is out of scope
     # note: USD holdings from immediate sell (at t0) are considered part of future value. USD is both metric and an asset on its own
-    def test_backtest_ham_q(self): #todo fix
+    def test_backtest_ham_q(self):
 
         #cfg = BacktestConfig()
         #dump('backtest_config', asdict(cfg))
