@@ -29,6 +29,7 @@ $$\max_q \sum_i profitLossForecast_i * qubit(q, i)$$
 
 ----
 ### Assumptions:
+- quantum permutation is faster than selecting maximums (or in our case just positive weights) on CPU/RAM.
 - prices are not correlated, thus problem is linear. 
 
 *Note: Introducing covariance matricies would make problem quadratic and would require divide and conquer segmentation of matrix for large portfolios. This implies that covarience matrix should be as sparse as possible with "islands" (around diagonal) of relations corresponding to segments, e.g. industry sectors.*
