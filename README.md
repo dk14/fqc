@@ -6,7 +6,7 @@
 
     ``python3 test.py``
 
-    Suggested actions to take are dumped to [acions_backtracking.json](actions_backtracking.json). 
+    Suggested actions to take are dumped to [actions_backtracking.json](actions_backtracking.json). 
 
 *Semantics: Action closes existing position in portfolio if there is one or opens a new one if position did not exist.*
 
