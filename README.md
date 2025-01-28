@@ -21,9 +21,9 @@ $$\max_q \sum_i profitLossForecast_i * qubit(q, i)$$
 
 *Note: Constrained Hamiltonian problems, akin to Lagrangians, are convertable to unconstrained ones by introducing penalizing terms*
 
-- [clacomp.py](clacomp.py) contains `Computer` implementation of regular computer, capable of solving through permutation.
+- [clacomp.py](clacomp.py) contains `Computer` implementation for regular computer, capable of solving through permutation.
 
-- [hamicomp.py](hamicomp.py) contains `Computer` implementation of Hamiltonian solvers (classic `Eigensolver` and simulated quantum `SamplingVQE`), running in qiskit simulator.
+- [hamicomp.py](hamicomp.py) contains `Computer` implementation for Hamiltonian solvers (classic `Eigensolver` and simulated quantum `SamplingVQE`), running in qiskit simulator.
 
 - [testutil.py](testutil.py) contains portfolio reader and `yfinance`.
 
