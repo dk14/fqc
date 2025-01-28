@@ -96,7 +96,7 @@ class Testing(unittest.TestCase):
         #dump('backtest_config', asdict(cfg))
         cfg_raw = load('backtest_config')
         cfg: BacktestConfig = make_dataclass( "BacktestConfig", ((k, type(v)) for k, v in cfg_raw.items()))(**cfg_raw)
-        
+
         t0 = datetime(cfg.t0y, cfg.t0m, cfg.t0d)
         t1 = datetime(cfg.t1y, cfg.t1m, cfg.t1d)
  
@@ -170,8 +170,8 @@ class Testing(unittest.TestCase):
                 x.price_t, 
                 get_price(t1, x.ticker, project_price_down(x)), 
                 "BUY" if x in to_buy else "SELL" if x in to_sell else "NONE", 
-                cash_from_selling_at_t1(x),  
-                action_fv(x)) for x in market.assets_of_interest]
+                cash_from_selling_at_t1(x) * point_to_unit,  
+                action_fv(x) * point_to_unit) for x in market.assets_of_interest]
 
         dump_csv_report(report)
         self.assertGreater(future_value_with_action, future_value_without_action)
