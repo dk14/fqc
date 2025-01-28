@@ -70,7 +70,7 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
             actions = optimize(HamiltonianComputerClassicEigen(), market.positions, market.assets_of_interest)
             result = [x.asset.name for x in actions] 
-            dump('decisions_chunk_ham_classic', result)
+            #dump('decisions_chunk_ham_classic', result)
             self.assertEqual(result, load('decisions_chunk_ham_classic'))
         
 
@@ -84,7 +84,7 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
             actions = optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)
             result = [x.asset.name for x in actions] 
-            dump('decisions_chunk_q', result)
+            #dump('decisions_chunk_q', result)
             self.assertEqual(result, load('decisions_chunk_q'))
             
     # note: liquidity, is not taken into account (unconstrained optimization), potentially can penilize buys at t0 without sells
