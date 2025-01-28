@@ -149,12 +149,12 @@ class Testing(unittest.TestCase):
         # hold t0, sell t1
         cash_from_selling_at_t1: Callable[[Asset], int]  = lambda x: get_price(t1, x.ticker, project_price_down(x))
         
-        # backtested portfolio value appreciation without taking any action
+        # backtested portfolio value without taking any action
         
         no_action_fvs = map(lambda x:  cash_from_selling_at_t1(x.asset), market.positions)
         future_value_without_action = sum(no_action_fvs) * point_to_unit
 
-        # backtested profits from taking action  
+        # backtested value from taking action  
         
         action_fv: Callable[[Asset], int] = lambda x:  profit_from_buying_at_t0(x) \
                          if x in to_buy else (cash_from_selling_at_t0(x) \
