@@ -67,8 +67,8 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*qiskit.*')
             warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
-
-            result = list(map(lambda x: x.asset.name, optimize(HamiltonianComputerClassicEigen(), market.positions, market.assets_of_interest)))
+            actions = optimize(HamiltonianComputerClassicEigen(), market.positions, market.assets_of_interest)
+            result = [x.asset.name for x in actions] 
             dump('decisions_chunk_ham_classic', result)
             self.assertEqual(result, load('decisions_chunk_ham_classic'))
         
@@ -81,8 +81,8 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*qiskit.*')
             warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
-
-            result = list(map(lambda x: x.asset.name, optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)))
+            actions = optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)
+            result = [x.asset.name for x in actions] 
             dump('decisions_chunk_q', result)
             self.assertEqual(result, load('decisions_chunk_q'))
             
@@ -105,11 +105,12 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
 
-            result = list(map(lambda x: x.asset.name, optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)))
+            actions = optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)
+            result = [x.asset.name for x in actions] 
         
-        to_sell = list(map(lambda x: x.asset, filter(lambda x: x.asset.name in result, market.positions)))
-        to_buy = list(filter(lambda x: x.name in result and not x in to_sell, market.assets_of_interest))
-        to_hold = list(filter(lambda x: not x.name in result, market.assets_of_interest))
+        to_sell = [x.asset for x in market.positions if x.asset.name in result]
+        to_buy = [x for x in market.assets_of_interest if x.name in result and not x in to_sell]
+        to_hold = [x for x in market.assets_of_interest if not x.name in result] 
 
         #print(to_sell)
         #print(to_buy)
@@ -139,7 +140,7 @@ class Testing(unittest.TestCase):
                          if x in to_buy else (cash_from_selling_at_t0(x) \
                                               if x in to_sell else cash_from_selling_at_t1(x)), market.assets_of_interest)
         
-        future_value_with_action = sum(action_fvs)  * point_to_unit
+        future_value_with_action = sum(action_fvs) * point_to_unit
         #print(future_value_with_action)
         #print(future_value_without_action)
 

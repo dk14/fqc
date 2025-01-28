@@ -50,7 +50,7 @@ class RiskModel:
 def sum_allocations_by_ticker(allocations: list[Allocation]) -> list[Allocation]:
     tickers = set(map(lambda x: x.ticker, allocations))
     grouped = [[y for y in allocations if y.ticker == x] for x in tickers]
-    return list(map(lambda g: Allocation(g[0].ticker, reduce(add, map(lambda x: x.allocation, g)), reduce(add, map(lambda x: x.allocation_usd, g))), grouped))
+    return [Allocation(g[0].ticker, reduce(add, map(lambda x: x.allocation, g)), reduce(add, map(lambda x: x.allocation_usd, g))) for g in grouped]
 
 
 price_cache: dict[(datetime, str), int] = {}
@@ -137,7 +137,7 @@ def get_assets(allocations: list[Allocation], t0: datetime, t1: datetime, risk: 
 def get_positions(assets: list[Asset], open_positions_ratio) -> list[HoldingPosition]:
     n = len(assets)
     k = int(open_positions_ratio * n)
-    return list(map(lambda x: HoldingPosition(x), assets[:k]))
+    return [HoldingPosition(x) for x in assets[:k]]
 
 
 # point_to_unit either converts allocation persent point to unit or a share to unit

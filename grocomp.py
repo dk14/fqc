@@ -22,7 +22,7 @@ from qiskit.circuit.library import GroverOperator, MCMT, ZGate, WeightedAdder, I
 
 # https://egrettathula.wordpress.com/2023/04/18/efficient-quantum-comparator-circuit/
 
-type Weights = list[int]
+Weights = list[int]
 
 class GroverComputer(Computer):
     def __init__(self, threshold):
@@ -32,17 +32,17 @@ class GroverComputer(Computer):
         while True:
             match formula:
                 case Sum(Zero(), Mul(x, name)):
-                    return x + acc
+                    return [x] + acc
                 case Sum(next, Mul(x, name)):
                     formula = next
-                    acc = x + acc
+                    acc = [x] + acc
 
-    def build_curcuit(formula: Sum) -> QuantumCircuit:
+    def build_curcuit(self, formula: Sum) -> QuantumCircuit:
         qnum = len(Computer.extract_vars(formula))
 
-        oracle = QuantumCircuit(qnum)
+        oracle = QuantumCircuit(qnum + 1)
 
-        adder = WeightedAdder(qnum, extract_weights(formula))
+        adder = WeightedAdder(qnum, GroverComputer.extract_weights(formula))
         comp = IntegerComparator(qnum, self.threshold, geq=True, name='Comparator')
         
         oracle.h(qnum)
@@ -56,13 +56,14 @@ class GroverComputer(Computer):
 
         qc.h(range(grover_op.num_qubits))
 
+        optimal_num_iterations = 100
         qc.compose(grover_op.power(optimal_num_iterations), inplace=True)
 
         qc.measure_all()
         return qc
 
     def maximize(self, formula: Sum) -> VarState:
-        qc = GroverComputer.build_curcuit(formula)
+        qc = self.build_curcuit(formula)
         from qiskit import transpile
         from qiskit_aer import AerSimulator
  
@@ -70,8 +71,8 @@ class GroverComputer(Computer):
  
         circ = transpile(qc, backend=simulator)
         job = simulator.run(circ)
-        result = list(sorted(job.result().get_counts())[0]).map(lambda x: 1 if x == '1' else 0)
-        names = computer.extract_vars(formula)
+        result = [1 if x == '1' else 0 for x in list(sorted(job.result().get_counts())[0])]
+        names = Computer.extract_vars(formula)
         return {names[i]: result[i] for i in range(len(names))}
         
 

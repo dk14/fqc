@@ -57,15 +57,15 @@ def add_formula_chunk(acc: Sum, profit: ProfitEstimator) -> Sum:
     return Sum(acc, Mul(profit.profit_sum, profit.asset.name))
 
 def optimize(computer: Computer, portfolio: list[HoldingPosition], assets_of_interest: list[Asset]) -> list[ActingPosition]:
-    holding = list(map(lambda x: x.asset, filter(lambda x: x.asset in assets_of_interest, portfolio)))
-    candidates = list(filter(lambda x: not x in holding, assets_of_interest))
+    holding = [x.asset for x in portfolio if x.asset in assets_of_interest]
+    candidates = [x for x in assets_of_interest if  not x in holding]
 
-    sell_profits = list(map(lambda x: profit(predict(x), -1), holding))
-    buy_profits = list(map(lambda x: profit(predict(x), 1), candidates))
+    sell_profits = [profit(predict(x), -1) for x in holding]
+    buy_profits = [profit(predict(x), 1) for x in candidates]
     profits = buy_profits + sell_profits
     
     formula = reduce(add_formula_chunk, profits, Zero())
-    result = list(map(lambda x: x[0], filter(lambda x: x[1] == 1, computer.maximize(formula).items())))
+    result = [x[0] for x in computer.maximize(formula).items() if x[1] == 1]
     
     return list(map(lambda x: ActingPosition(x), filter(lambda x: x.name in result, assets_of_interest)))
 
