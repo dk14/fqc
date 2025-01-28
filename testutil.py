@@ -115,18 +115,18 @@ def approximate_price_down(ticker: str, t0: datetime, t1:datetime, risk: RiskMod
        else:
            return risk.spread
 
-def get_asset_price(a: Allocation, t0: datetime) -> int:
+def get_asset_price(a: Allocation, t0: datetime, default: int = None) -> int:
     if t0 == None:
         if a.allocation == 0:
             return 1
         else:
             return a.allocation_usd / a.allocation
     else:
-        return get_price(t0, a.ticker)
+        return get_price(t0, a.ticker, default)
 
 def get_assets(allocations: list[Allocation], t0: datetime, t1: datetime, risk: RiskModel) -> list[Asset]:
     def split(a: Allocation):
-        price = get_asset_price(a, t0)
+        price = get_asset_price(a, t0, 100)
         price_up = approximate_price_up(a.ticker, t0, t1, risk)
         price_down = approximate_price_down(a.ticker, t0, t1, risk)
         return map(lambda i: Asset(a.ticker + "#" + str(i), price, price_up, price_down, a.ticker), range(0, a.allocation))

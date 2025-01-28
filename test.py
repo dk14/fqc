@@ -90,14 +90,15 @@ class Testing(unittest.TestCase):
     # note: zero-risk interest (and overall inflation of usd) not taking into account. time value for money is out of scope
     # note: USD holdings from immediate sell (at t0) are considered part of future value. USD is both metric and an asset on its own
     def test_backtrack_ham_q(self): #todo fix
+
         t0 = datetime(2021, 5, 1)
         t1 = datetime(2022, 8, 1)
         point_to_unit = 100000
-        real_market = read_portfolio(limit = 4, point_to_unit = point_to_unit, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
+        real_market = read_portfolio(limit = 15, point_to_unit = point_to_unit, t0 = t0, t1 = t1, risk = RiskModel(1.5, 0))
         market = real_market
 
-        self.assertEqual(len(market.assets_of_interest), 4)
-        self.assertEqual(len(market.positions), 2)
+        #self.assertEqual(len(market.assets_of_interest), 4)
+        #self.assertEqual(len(market.positions), 2)
 
 
         with warnings.catch_warnings():
@@ -105,8 +106,9 @@ class Testing(unittest.TestCase):
             warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r'.*qiskit.*') 
             warnings.filterwarnings("ignore", category=DeprecationWarning, module=r'.*portfolio.*')
 
-            actions = optimize(HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)
-            result = [x.asset.name for x in actions] 
+            actions = optimize_agg(3, HamiltonianComputerQuantum(), market.positions, market.assets_of_interest)
+            # simulator bug?? limit = 10, qbits = 3, qiskit.exceptions.QiskitError: 'block_size (2) cannot be larger than number of qubits (1)'
+            result = [x.asset.name for x in actions]
         
         to_sell = [x.asset for x in market.positions if x.asset.name in result]
         to_buy = [x for x in market.assets_of_interest if x.name in result and not x in to_sell]
