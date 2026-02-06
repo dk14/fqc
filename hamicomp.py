@@ -4,7 +4,7 @@ from comp import *
 import itertools
 from qiskit_optimization import QuadraticProgram
 
-#formulate problem compatible with quadrantic program
+#formulate problem compatible with quadratic program
 
 LinearFormula = dict[str, int]
 
