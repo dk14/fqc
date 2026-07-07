@@ -22,6 +22,14 @@
     <priority>1.0</priority>
   </url>
 
+  <!-- Explicit index.html as Markdown file -->
+  <url>
+    <loc>https://dk14.github.io/fqc/index.md</loc>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
   <!-- Project README on GitHub (use raw file URL if you prefer) -->
   <url>
     <loc>https://github.com/dk14/fqc/blob/main/README.md</loc>
