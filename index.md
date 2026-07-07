@@ -8,6 +8,28 @@ It uses **pulse‑width modulation** – the key trick quantum theory makes you 
 
 > Moreover: the `qubits` we currently can build are **noisy, expensive and nowhere near** the scale required for the algorithms that are often advertised. Relying on “quantum supremacy” for real‑world quantitative research is, at best, a gamble. A quantum computer without noise (or with noise minimized) would still be **worse than an analog computer (without noise)** in its performance.
 
+### 🔬 Why the reproduction of CHSH‑type experiment on **q.doomsdayexplorer.online** is not proof of quantum "absolute non-determinism" entanglement
+
+1. **Classic deterministic model** –  
+   The simulation runs on an ordinary (non‑quantum) computer using only classical arithmetic. No quantum superposition or wave‑function collapse is ever invoked.
+
+2. **Coincidence‑detector post‑selection** –  
+   The detector does *not* exchange any data between the two measurement stations.  
+   It simply **collects raw outcomes**, then applies a **comparison/filtering rule** (the “coincidence window”).  
+   This rule **biases the joint statistics**, producing values that look like a CHSH violation even though the underlying data are completely independent.
+
+3. **No‑communication proof** –  
+   Because the algorithm never sends a bit from one side to the other, the observed correlation cannot be attributed to a non‑local quantum link.  
+   The apparent “entanglement” is a statistical artifact of the **post‑selection procedure**, not a physical phenomenon.
+
+4. **Implication** –  
+   If a **trivial deterministic model** can replicate the published CHSH results, the claim that such experiments *prove* quantum supremacy or genuine entanglement loses its evidential weight.  
+
+> **Bottom line:** the “magic” behind quantum entanglement, as presented in many popular demonstrations, can be reproduced (and thus refuted) with a simple classical simulation that carefully models the coincidence detector.  
+
+For the full code and a step‑by‑step walk‑through, visit the demo at **https://q.doomsdayexplorer.online**.
+
+
 ---
 
 ## 🛠️ What we actually recommend
