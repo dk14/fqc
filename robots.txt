@@ -1,0 +1,67 @@
+# --------------------------------------------------------------
+#  Doomsday Explorer – robots.txt
+#  Allows all well‑behaved crawlers to index the entire site
+#  and points them to the definitive sitemap.
+# --------------------------------------------------------------
+
+User-agent: *
+Allow: /
+
+# Explicitly permit our JSON data files (useful for bots that are
+# conservative about non‑HTML resources)
+Allow: /*.html
+Allow: /*.json
+Allow: /*.md
+Allow: /*.js
+Allow: /*.ts
+
+# Sitemap location
+Sitemap: https://fqc.doomsdayexplorer.online/sitemap.xml
+
+User-agent: GPTBot
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: OAI-SearchBot
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: ChatGPT-User
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: ClaudeBot
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: Claude-User
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: PerplexityBot
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: Google-Extended
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: Applebot-Extended
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: Bytespider
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: CCBot
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+User-agent: *
+Allow: /
+Content-Signal: ai-input=yes, search=yes, ai-train=yes
+
+# Machine-readable indexes for agents (from the root of this portal):
+# - https://doomsdayexplorer.online/faq
+# - https://doomsdayexplorer.online/faq.md
