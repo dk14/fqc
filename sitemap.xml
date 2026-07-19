@@ -6,28 +6,28 @@
           http://www.sitemaps.org/schemas/sitemap/0.9
           http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://dk14.github.io/fqc/</loc>
+    <loc>https://fqc.doomsdayexplorer.online/</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://dk14.github.io/fqc/index.html</loc>
+    <loc>https://fqc.doomsdayexplorer.online/index.html</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://dk14.github.io/fqc/index.md</loc>
+    <loc>https://fqc.doomsdayexplorer.online/index.md</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://github.com/dk14/fqc/blob/main/README.md</loc>
+    <loc>https://fqc.doomsdayexplorer.online/README.md</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
